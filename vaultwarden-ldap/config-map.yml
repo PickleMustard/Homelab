@@ -10,4 +10,7 @@ metadata:
 data:
   config.toml: |
     vaultwarden_url = "https://vault.picklemustard.dev"
-    vaultwarden_admin_token = 
+    ldap_host = "ldap://192.168.1.142:3890"
+    ldap_bind_dn = "uid=bind_reader,ou=people-dc=andromeda,dc=picklemustard,dc=dev"
+    ldap_search_base_dn = "dc=andromeda,dc=picklemustard,dc=dev"
+    ldap_search_filter = "(&(objectClass
