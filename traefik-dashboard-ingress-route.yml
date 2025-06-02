@@ -1,0 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`traefik.andromeda.picklemustard.dev`)
+    kind: Rule
+    services:
+    - name: traefik-dashboard
+      port: 9000
+

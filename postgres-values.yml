@@ -1,0 +1,29 @@
+primary:
+  pgHbaConfiguration: | 
+    host     all             all             0.0.0.0/0               ldap ldapserver=192.168.1.142 ldapport=3890 ldapbasedn="dc=andromeda,dc=picklemustard,dc=dev" ldapbinddn="uid=postgres_bind_reader,ou=people,dc=andromeda,dc=picklemustard,dc=dev" ldapbindpasswd=admin1234 ldapsearchattribute=uid
+    host     all             all             ::/0                    ldap ldapserver=192.168.1.142 ldapport=3890 ldapbasedn="dc=andromeda,dc=picklemustard,dc=dev" ldapbinddn="uid=postgres_bind_reader,ou=people,dc=andromeda,dc=picklemustard,dc=dev" ldapbindpasswd=admin1234 ldapsearchattribute=uid
+    host     all             postgres        0.0.0.0/0               md5
+    host     all             postgres        ::/0                    md5
+    local    all             all                                     md5
+    host     all             all        127.0.0.1/32                 md5
+    host     all             all        ::1/128                      md5
+auth:
+  username: "admin"
+  password: "purple14735#"
+  postgresPassword: "purple14735#"
+  enablePostgresUser: true
+  replicationPassword: "purple14735#"
+  replicationUsername: "repl"
+
+architecture: "standalone"
+
+ldap:
+  enabled: true
+  server: "192.168.1.142"
+  port: "3890"
+  basedn: "dc=andromeda,dc=picklemustard,dc=dev"
+  binddn: "uid=postgres_bind_reader,ou=people,dc=andromeda,dc=picklemustard,dc=dev"
+  bindpw: "admin1234"
+  searchAttribute: "uid"
+  scope: "sub"
+    #searchFilter: "(&(memberOf=cn=postgres_user,ou=people,dc=andromeda,dc=picklemustard,dc=dev)(uid=$username))"

@@ -1,0 +1,327 @@
+http:
+  serversTransports:
+    andromedaTransport:
+      serverName: "andromeda.picklemustard.dev"
+      insecureSkipVerify: true
+
+  routers:
+    testing:
+      rule: "Host(`testing.picklemustard.dev`)"
+      service: "testing"
+      entryPoints: 
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+      observability:
+        tracing: true
+        metrics: true
+
+    adguard:
+      rule: "Host(`adguard.picklemustard.dev`)"
+      service: "adguard"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    mail-admin:
+      rule: "Host(`mail.picklemustard.dev`)"
+      service: andromeda-secure
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    postgres:
+      rule: Host(`postgres.picklemustard.dev`)
+      service: andromeda
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    homarr:
+      rule: Host(`homarr.picklemustard.dev`)
+      service: andromeda
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    traefik-kube:
+      rule: Host(`traefik-kube.picklemustard.dev`)
+      service: andromeda
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    lldap:
+      rule: Host(`lldap.picklemustard.dev`)
+      service: andromeda
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    auth:
+      rule: Host(`auth.picklemustard.dev`)
+      service: andromeda
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    andromeda-home:
+      rule: HostRegexp(`^.+\.andromeda\.picklemustard\.home$`)
+      service: "andromeda"
+      entryPoints:
+        - "web"
+
+    nextcloud:
+      rule: Host(`nextcloud.picklemustard.dev`)
+      service: "andromeda"
+      entryPoints:
+        - "websecure"
+
+    vaultwarden:
+      rule: Host(`passwords.picklemustard.dev`)
+      service: "andromeda"
+      entryPoints:
+        - "websecure"
+
+    dashboard:
+      rule: "Host(`traefik.picklemustard.dev`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      service: "api@internal"
+      entryPoints:
+        - "websecure"
+      middlewares:
+        - auth
+      tls:
+        certResolver: "letsencrypt"
+
+    andromeda:
+      rule: HostRegexp(`^.+\.andromeda\.picklemustard\.dev$`)
+      service: "andromeda"
+        #middlewares:
+        #  - "pass-tls-client-cert"
+        #- "pass-proxy-headers"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    synology:
+      rule: "Host(`files.picklemustard.dev`)"
+      service: "synology"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    synology_drive:
+      rule: "Host(`drive.picklemustard.dev`)"
+      service: "synology_drive"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    truenas:
+      rule: "Host(`truenas.picklemustard.dev`)"
+      service: "truenas"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    default:
+      rule: HostRegexp(`{catchall:.*}`)
+      service: "andromeda"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+  services:
+    testing:
+      loadBalancer:
+        servers:
+          - url: "https://testing.testing.picklemustard.dev"
+        passHostHeader: true
+
+    adguard:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.253/"
+
+    dashboard:
+      loadBalancer:
+        servers:
+          - url: "dashboard@internal"
+
+    andromeda:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.142"
+        passHostHeader: true
+
+    andromeda-secure:
+      loadBalancer:
+        servers:
+          - url: "https://andromeda.picklemustard.dev"
+        passHostHeader: true
+
+
+    lldap-service:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.142:443"
+        passHostHeader: true
+
+    lldap-dashboard-service:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.142:17170"
+        passHostHeader: true
+
+    synology:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.3:5000/"
+
+    synology_drive:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.3:10002"
+
+    truenas:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.77"
+        passHostHeader: true
+        sticky:
+          cookie:
+            name: "truenas-session"
+
+  middlewares:
+    auth:
+      basicAuth:
+        users:
+          - "admin:$apr1$2PLNcPdF$YgLdlhpWPWfY8oimShhAA0"
+    pass-proxy-headers:
+      headers:
+        sslProxyHeaders:
+          "Host": ""
+          "X-Forwarded-Proto": "https"
+          "X-Forwarded-Port": "80"
+    pass-tls-client-cert:
+      passTLSClientCert:
+        pem: true
+
+tcp:
+  routers:
+    postgres:
+      rule: "HostSNI(`postgres.picklemustard.dev`)"
+      service: "postgres"
+      entryPoints:
+        - "web"
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+    ldap:
+      rule: "HostSNI(`user.picklemustard.dev`)"
+      service: "ldap"
+      entryPoints:
+        - "web"
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+    mail-smtp:
+      entryPoints:
+        - "mail-smtp"
+      rule: "HostSNI(`*`)"
+      service: "mail-smtp"
+    mail-imap:
+      entryPoints:
+        - "mail-imap"
+      rule: "HostSNI(`*`)"
+      service: "mail-imap"
+    mail-imaps:
+      entryPoints:
+        - "mail-imaps"
+      rule: "HostSNI(`*`)"
+      service: "mail-imaps"
+      tls:
+        certResolver: "letsencrypt"
+    mail-pop3:
+      entryPoints:
+        - "mail-pop3"
+      rule: "HostSNI(`*`)"
+      service: "mail-pop3"
+    mail-pop3s:
+      entryPoints:
+        - "mail-pop3s"
+      rule: "HostSNI(`*`)"
+      service: "mail-pop3s"
+      tls:
+        certResolver: "letsencrypt"
+    mail-submission:
+      entryPoints:
+        - "mail-submission"
+      rule: "HostSNI(`*`)"
+      service: "mail-submission"
+    mail-submissions:
+      entryPoints:
+        - "mail-submissions"
+      rule: "HostSNI(`*`)"
+      service: "mail-submissions"
+      tls:
+        certResolver: "letsencrypt"
+    mail-sieve:
+      entryPoints: 
+        - "mail-sieve"
+      rule: "HostSNI(`*`)"
+      service: "mail-sieve"
+  services:
+    ldap:
+      loadBalancer:
+        servers:
+          - address: "ldap://192.168.1.142"
+
+    mail-smtp:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.142:30662"
+    mail-submissions:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.142:31230"
+    mail-submission:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.142:32662"
+    mail-imap:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.142:31955"
+    mail-imaps:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.142:32119"
+    mail-pop3:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.142:30712"
+    mail-pop3s:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.142:31710"
+    mail-sieve:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.142:32129"
+    postgres:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.142:31402"

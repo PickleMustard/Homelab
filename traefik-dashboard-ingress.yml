@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-ingress
+  namespace: kube-system
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+      #traefik.ingress.kubernetes.io/router.tls: true
+    spec.ingressClassName: traefik
+spec:
+  rules:
+    - host: traefik.andromeda.picklemustard.dev 

@@ -1,0 +1,13 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: lldap-tcp-route
+  namespace: lldap
+spec:
+  entryPoints:
+    - ldap
+  routes:
+  - match: HostSNI(`*`)
+    services:
+    - name: lldap-service
+      port: 3890

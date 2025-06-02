@@ -1,0 +1,65 @@
+version: "3"
+
+networks:
+  macvlan_network:
+    external:
+      name: macvlan_network
+
+services:
+  traefik:
+    image: traefik:v3.3
+    container_name: traefik
+    restart: unless-stopped
+    networks:
+      macvlan_network:
+        ipv4_address: 192.168.1.254
+    ports:
+      - "80:80"
+      - "443:443"
+      - "25:25"
+      - "4190:4190"
+      - "465:465"
+      - "587:587"
+      - "110:110"
+      - "993:993"
+      - "143:143"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - ./dynamic_conf.yml:/etc/traefik/dynamic_conf.yml
+      - ./acme.json:/acme.json
+    environment:
+      - CF_DNS_API_TOKEN=TDGfAkuM-pE_47qVxlF0fOA4KZKTA_cVVaypPBYo
+      - TRAEFIK_DASHBOARD_CREDENTIALS=${TRAEFIK_DASHBOARD_CREDENTIALS}
+    env_file: .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.andromeda.picklemustard.dev`)"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+      - "traefik.http.routers.traefik-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.andromeda.picklemustard.dev`)"
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=andromeda.picklemustard.dev"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.andromeda.picklemustard.dev"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+        #- "traefik.http.routers.api.rule=Host(`traefik.picklemustard.dev`)"
+        #- "traefik.http.routers.api.entrypoints=https"
+        #- "traefik.http.routers.api.tls.domains[0].main=picklemustard.dev"
+        #- "traefik.http.routers.api.tls.domains[0].sans=*.picklemustard.dev"
+        #- "traefik.http.routers.api.service=api@internal"
+        #- "traefik.http.routers.api.tls=true"
+        #- "traefik.http.routers.api.tls.certresolver=letsencrypt"
+        #- "traefik.http.routers.synology.rule=Host(`synology.picklemustard.dev`)"
+        #- "traefik.http.routers.api.entrypoints=https"
+        #- "traefik.http.routers.api.tls.domains[0].main=picklemustard.dev"
+        #- "traefik.http.routers.api.tls.domains[0].sans=*.picklemustard.dev"
+        #- "traefik.http.routers.api.service=synology"
+        #- "traefik.http.routers.api.tls=true"
+        #- "traefik.http.routers.api.tls.certresolver=letsencrypt"
+

@@ -1,0 +1,18 @@
+version: '3'
+
+networks:
+  macvlan_network:
+    external:
+      name: macvlan_network
+
+services:
+  adguard:
+    container_name: adguard
+    image: adguard/adguardhome
+    restart: unless-stopped
+    networks:
+      macvlan_network:
+          ipv4_address: 192.168.1.253
+    volumes:
+      - /opt/adguard/work:/opt/adguardhome/work
+      - /opt/adguard/conf:/opt/adguardhome/conf

@@ -1,0 +1,75 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    environment:
+      - name: CF_DNS_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: traefik-dns-token
+            key: token
+
+    tlsStore:
+      default:
+        defaultCertificate:
+          secretName: picklemustard-dev-tls
+
+    ports:
+      web:
+        redirections:
+          entryPoint:
+            to: websecure
+            scheme: https
+            permanent: true
+    logs:
+      level: INFO
+      access:
+        enabled: true
+    #service:
+    #  spec:
+    #    externalTrafficPolicy: Local
+
+    dashboard:
+      enabled: true
+      insecure: true
+
+    deployment:
+      kind: DaemonSet
+    hostNetwork: true
+
+    updateStrategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 2
+        maxSurge:
+
+    additionalArguments:
+      - "--entryPoints.ldap.address=:3890/tcp"
+      - "--entryPoints.imaps.address=:10993/tcp"
+      - "--entryPoints.pop3s.address=:10995/tcp"
+      - "--entryPoints.smtp.address=:10025/tcp"
+      - "--entryPoints.smtps.address=:10465/tcp"
+      - "--serversTransport.insecureSkipVerify=true"
+      - "--entryPoints.websecure.http.tls=true"
+        #- "--dns01-recursive-nameservers=1.1.1.1:53,9.9.9.9:53"
+        #- "--dns01-recursive-nameservers-only"
+        #- "--traefik.http.routers.traefik-secure.entrypoints=https"
+        #- "--traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+        #- "--traefik.http.routers.traefik-secure.tls=true"
+        #- "--traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+        #- "--traefik.http.routers.traefik-secure.tls.domains[0].main=andromeda.picklemustard.dev"
+        #- "--traefik.http.routers.traefik-secure.tls.domains[0].sans=*.andromeda.picklemustard.dev"
+    #  - "--entryPoints.websecure.proxyProtocol.insecure"
+    #  - "--entryPoints.web.proxyProtocol.trustedIPs=123.123.123.123"
+
+# See https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml for more examples
+# The deployment.kind=DaemonSet and hostNetwork=true is to get real ip and x-forwarded for,
+# and can be omitted if this is not needed.
+
+# The updateStrategy settings are required for the latest traefik helm version when using hostNetwork.
+# see more here: https://github.com/traefik/traefik-helm-chart/blob/v20.8.0/traefik/templates/daemonset.yaml#L12-L14
+# but this version not yet supported by k3s, so leaving it commented out for now.
+# The config above has been tested to work with latest stable k3s (v1.25.4+k3s1).

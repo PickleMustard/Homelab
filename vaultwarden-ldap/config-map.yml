@@ -1,0 +1,13 @@
+apiVersion: v1
+king: configmap
+metadata:
+  labels:
+    app.kubernetes.io/instance: vaultwarden-ldap
+    app.kubernetes.io/name: vaultwarden-ldap
+    app.kubernetes.io/version: latest
+  name: vaultwarden-ldap
+  namespace: vaultwarden
+data:
+  config.toml: |
+    vaultwarden_url = "https://vault.picklemustard.dev"
+    vaultwarden_admin_token = 

@@ -1,0 +1,37 @@
+---
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+log:
+  level: INFO
+
+api:
+  dashboard: true
+  insecure: true
+
+entryPoints:
+  web:
+    address: :80
+  websecure:
+    address: :443
+
+certificateResolvers:
+  cloudflare:
+    acme:
+      email: dillon.w.carter@gmail.com
+      storage: /var/traefik/certs/cloudflare-acme.json
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"
+
+providers:
+  docker:
+    exposedByDefault: false
+    network: ServiesMacVlan 
+  file:
+    directory: /etc/traefik/conf
+    watch: true
