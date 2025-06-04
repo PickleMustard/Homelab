@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authelia
+  namespace: lldap
+spec:
+  selector:
+    matchLabels:
+      app: authelia
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: authelia
+    spec:
+      containers:
+      - name: authelia
+        image: authelia/authelia:latest
+        env:
+        - name: "HMAC_SECRET"
+          valueFrom:
+            secretKeyRef:
+              name: "authelia-credentials"
+              key: "hmac-secret"
+        - name: "STALWART_CLIENT_SECRET"
+          valueFrom:
+            secretKeyRef:
+              name: "authelia-credentials"
+              key: "stalwart-client-secret"
+        - name: "JWT_SECRET"
+          valueFrom:
+            secretKeyRef:
+              name: "authelia-credentials"
+              key: "jwt-secret"
+        - name: "STORAGE_ENCRYPTION_KEY"
+          valueFrom:
+            secretKeyRef:
+              name: "authelia-credentials"
+              key: "storage-encryption-key"
+        ports:
+        - containerPort: 9091
+          name: http
+        volumeMounts:
+        - name: config
+          mountPath: /config/configuration.yml
+          readOnly: false
+          subPath: configuration.yml
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: config
+        configMap:
+          defaultMode: 0777
+          name: authelia-config
+      - name: data
+        persistentVolumeClaim:
+          claimName: authelia-data-pvc

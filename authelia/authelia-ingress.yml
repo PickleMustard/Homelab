@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: authelia-ingress
+  namespace: lldap
+  annotations:
+    spec.ingressClassName: "traefik"
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  rules:
+  - host: auth.picklemustard.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: authelia-service
+            port:
+              number: 9091
