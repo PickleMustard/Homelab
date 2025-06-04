@@ -85,7 +85,7 @@ http:
         - "websecure"
 
     vaultwarden:
-      rule: Host(`passwords.picklemustard.dev`)
+      rule: Host(`vault.picklemustard.dev`)
       service: "andromeda"
       entryPoints:
         - "websecure"
