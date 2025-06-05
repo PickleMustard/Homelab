@@ -12,7 +12,7 @@ data:
     certificates_directory: '/config/certificates/'
 
     server:
-      address: 'tcp://0.0.0.0:9091'
+      address: 'tcp://:9091'
       asset_path: ''
       headers:
         csp_template: ""
@@ -26,6 +26,9 @@ data:
       endpoints:
         enable_pprof: false
         enable_expvars: false
+        authz:
+          forward-auth:
+            implementation: 'ForwardAuth'
           #authz:
           #  auth-request:
           #    implementation: 'AuthRequest'
