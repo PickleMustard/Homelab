@@ -209,13 +209,10 @@ http:
   middlewares:
     forward-auth:
       forwardAuth:
-        address: 'https://auth.picklemustard.dev/api/authz/forward-auth'
+        address: 'https://auth.picklemustard.dev/api/authz/forward-auth/'
         trustForwardHeader: 'true'
         authResponseHeaders: 
-          - "Remote-User"
-          - "Remote-Groups"
-          - "Remote-Name"
-          - "Remote-Email"
+        authRequestHeaders:
         preserveRequestMethod: 'true'
     auth:
       basicAuth:

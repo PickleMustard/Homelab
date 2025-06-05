@@ -46,8 +46,6 @@ entryPoints:
     address: ":465"
 
 
-serversTransport:
-  insecureSkipVerify: true
 api:
   debug: true
   dashboard: true

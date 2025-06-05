@@ -29,7 +29,7 @@ services:
       - ./dynamic_conf.yml:/etc/traefik/dynamic_conf.yml
       - ./acme.json:/acme.json
     environment:
-      - CF_DNS_API_TOKEN=TDGfAkuM-pE_47qVxlF0fOA4KZKTA_cVVaypPBYo
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
       - TRAEFIK_DASHBOARD_CREDENTIALS=${TRAEFIK_DASHBOARD_CREDENTIALS}
     env_file: .env
     labels:
