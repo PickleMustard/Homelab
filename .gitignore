@@ -19,6 +19,9 @@
 *.accdb
 *.dbf
 
+#Ignore adguard filters
+adguard/work/data/filters
+
 # SQL dumps and backups
 *.sql
 *.dump
