@@ -4,9 +4,20 @@ metadata:
   name: authelia-service
   namespace: lldap
 spec:
+  type: ClusterIP
+  sessionAffinity: None
+    #clusterIP: 10.43.181.178
+    #clusterIPs:
+    #  - 10.43.181.177
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
   selector:
-    app: authelia
+    app.kubernetes.io/instance: authelia
+    app.kubernetes.io/name: authelia
   ports:
   - name: http
-    port: 9091
-    targetPort: 9091
+    port: 80
+    protocol: TCP
+    targetPort: http
