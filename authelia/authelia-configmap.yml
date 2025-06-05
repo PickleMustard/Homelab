@@ -26,28 +26,28 @@ data:
       endpoints:
         enable_pprof: false
         enable_expvars: false
-        authz:
-          auth-request:
-            implementation: 'AuthRequest'
-            authn_strategies:
-            - name: 'HeaderAuthRequestProxyAuthorization'
-              schemes:
-              - 'Basic'
-            - name: 'CookieSession'
-          ext-authz:
-            implementation: 'ExtAuthz'
-            authn_strategies:
-            - name: 'HeaderProxyAuthorization'
-              schemes:
-              - 'Basic'
-            - name: 'CookieSession'
-          forward-auth:
-            implementation: 'ForwardAuth'
-            authn_strategies:
-            - name: 'HeaderProxyAuthorization'
-              schemes:
-              - 'Basic'
-            - name: 'CookieSession'
+          #authz:
+          #  auth-request:
+          #    implementation: 'AuthRequest'
+          #    authn_strategies:
+          #    - name: 'HeaderAuthRequestProxyAuthorization'
+          #      schemes:
+          #      - 'Basic'
+          #    - name: 'CookieSession'
+          #  ext-authz:
+          #    implementation: 'ExtAuthz'
+          #    authn_strategies:
+          #    - name: 'HeaderProxyAuthorization'
+          #      schemes:
+          #      - 'Basic'
+          #    - name: 'CookieSession'
+          #  forward-auth:
+          #    implementation: 'ForwardAuth'
+          #    authn_strategies:
+          #    - name: 'HeaderProxyAuthorization'
+          #      schemes:
+          #      - 'Basic'
+          #    - name: 'CookieSession'
     access_control:
       default_policy: 'two_factor'
       rules:
