@@ -13,13 +13,18 @@ spec:
 
     ports:
       web:
+        forwardedHeaders:
+          insecure: true
         redirections:
           entryPoint:
             to: websecure
             scheme: https
             permanent: true
+      websecure:
+        forwardedHeaders:
+          insecure: true
     logs:
-      level: INFO
+      level: DEBUG
       access:
         enabled: true
     #service:

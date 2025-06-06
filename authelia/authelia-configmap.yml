@@ -11,6 +11,7 @@ data:
 
     certificates_directory: '/config/certificates/'
 
+
     server:
       address: 'tcp://:9091'
       asset_path: ''
@@ -27,37 +28,33 @@ data:
         enable_pprof: false
         enable_expvars: false
         authz:
+          auth-request:
+            implementation: 'AuthRequest'
+            authn_strategies:
+            - name: 'HeaderAuthRequestProxyAuthorization'
+            - name: 'CookieSession'
+          ext-authz:
+            implementation: 'ExtAuthz'
+            authn_strategies:
+            - name: 'HeaderAuthorization'
+            - name: 'CookieSession'
           forward-auth:
             implementation: 'ForwardAuth'
-          #authz:
-          #  auth-request:
-          #    implementation: 'AuthRequest'
-          #    authn_strategies:
-          #    - name: 'HeaderAuthRequestProxyAuthorization'
-          #      schemes:
-          #      - 'Basic'
-          #    - name: 'CookieSession'
-          #  ext-authz:
-          #    implementation: 'ExtAuthz'
-          #    authn_strategies:
-          #    - name: 'HeaderProxyAuthorization'
-          #      schemes:
-          #      - 'Basic'
-          #    - name: 'CookieSession'
-          #  forward-auth:
-          #    implementation: 'ForwardAuth'
-          #    authn_strategies:
-          #    - name: 'HeaderProxyAuthorization'
-          #      schemes:
-          #      - 'Basic'
-          #    - name: 'CookieSession'
+            authn_strategies:
+            - name: 'HeaderAuthRequestProxyAuthorization'
+            - name: 'CookieSession'
+          legacy:
+            implementation: 'Legacy'
+            authn_strategies:
+            - name: 'HeaderAuthorization'
+              schemes:
+              - 'Basic'
+            - name: 'CookieSession'
     access_control:
-      default_policy: 'two_factor'
+      default_policy: 'bypass'
       rules:
-        - domain:
-            - "auth.picklemustard.dev"
-          policy: bypass
-        - domain: '*.picklemustard.dev'
+        - domain: 
+            - '*.picklemustard.dev'
           policy: 'two_factor'
             #identity_providers:
             #  oidc:
@@ -243,22 +240,6 @@ data:
         base_dn: 'dc=andromeda,dc=picklemustard,dc=dev'
         user: 'uid=bind_reader,ou=people,dc=andromeda,dc=picklemustard,dc=dev'
         password: 'purple14735#'
-        #start_tls: false
-        #address: 'ldap://192.168.1.142:3890'
-        #implementation: custom
-        #base_dn: 'dc=andromeda,dc=picklemustard,dc=dev'
-        #additional_users_dn: 'OU=people'
-        #users_filter: '(&({username_attribute}={input})(objectClass=person))'
-        #additional_groups_dn: 'OU=groups'
-        #groups_filter: '(member={dn})'
-        #user: 'uid=authelia_bind_reader,ou=people,dc=andromeda,dc=picklemustard,dc=dev'
-        #password: 'purple14735#'
-        #attributes:
-        #  distinguished_name: 'distinguishedName'
-        #  username: 'uid'
-        #  mail: 'mail'
-        #  member_of: 'memberOf'
-        #  group_name: 'cn'
       password_change:
         disable: false
     password_policy:
@@ -274,6 +255,7 @@ data:
         enabled: false
         min_score: 0
     session:
+      secret: '{{ env "SESSION_SECRET" }}'
       name: 'authelia_session'
       same_site: 'lax'
       inactivity: '5 minutes'
@@ -282,6 +264,7 @@ data:
       cookies:
         - domain: 'picklemustard.dev'
           authelia_url: 'https://auth.picklemustard.dev'
+          default_redirection_url: 'https://www.picklemustard.dev'
     regulation:
       modes:
       - 'user'

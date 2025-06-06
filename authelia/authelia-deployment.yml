@@ -43,6 +43,11 @@ spec:
             secretKeyRef:
               name: "authelia-credentials"
               key: "storage-encryption-key"
+        - name: "SESSION_SECRET"
+          valueFrom:
+            secretKeyRef:
+              name: "authelia-credentials"
+              key: "session-secret"
         - name: "AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE"
           value: '/app/secrets/postmaster-secret'
         ports:

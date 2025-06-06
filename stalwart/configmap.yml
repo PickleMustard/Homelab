@@ -61,7 +61,7 @@ data:
         "10.0.0.0/8" = ""
       [server.tls]
       enable = true
-      implicit = true
+      implicit = false
       [server.http]
         url = "protocol + '://' + config_get('server.hostname')"
         use-x-forwarded = true
