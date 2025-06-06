@@ -16,8 +16,21 @@ http:
         tracing: true
         metrics: true
 
+    andromeda:
+      rule: "Host(`andromeda.picklemustard.dev`)"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+      observability:
+        tracing: true
+        metrics: true
+      service: andromeda
+
     adguard:
       rule: "Host(`adguard.picklemustard.dev`)"
+      middlewares:
+        - forward-auth
       service: "adguard"
       entryPoints:
         - "websecure"
@@ -26,7 +39,9 @@ http:
 
     mail-admin:
       rule: "Host(`mail.picklemustard.dev`)"
-      service: andromeda-secure
+      middlewares:
+        - forward-auth
+      service: andromeda
       entryPoints:
         - "websecure"
       tls:
@@ -34,6 +49,8 @@ http:
 
     postgres:
       rule: Host(`postgres.picklemustard.dev`)
+      middlewares:
+        - forward-auth
       service: andromeda
       entryPoints:
         - "websecure"
@@ -42,16 +59,18 @@ http:
 
     homarr:
       rule: Host(`homarr.picklemustard.dev`)
-      service: andromeda
+      middlewares:
+        - forward-auth
       entryPoints:
         - "websecure"
-      middlewares:
-      - forward-auth
       tls:
         certResolver: "letsencrypt"
+      service: andromeda
 
     traefik-kube:
       rule: Host(`traefik-kube.picklemustard.dev`)
+      middlewares:
+        - forward-auth
       service: andromeda
       entryPoints:
         - "websecure"
@@ -60,6 +79,8 @@ http:
 
     lldap:
       rule: Host(`lldap.picklemustard.dev`)
+      middlewares:
+        - forward-auth
       service: andromeda
       entryPoints:
         - "websecure"
@@ -82,6 +103,8 @@ http:
 
     nextcloud:
       rule: Host(`nextcloud.picklemustard.dev`)
+      middlewares:
+        - forward-auth
       service: "andromeda"
       entryPoints:
         - "websecure"
@@ -98,23 +121,14 @@ http:
       entryPoints:
         - "websecure"
       middlewares:
-        - auth
-      tls:
-        certResolver: "letsencrypt"
-
-    andromeda:
-      rule: HostRegexp(`^.+\.andromeda\.picklemustard\.dev$`)
-      service: "andromeda"
-        #middlewares:
-        #  - "pass-tls-client-cert"
-        #- "pass-proxy-headers"
-      entryPoints:
-        - "websecure"
+        - forward-auth
       tls:
         certResolver: "letsencrypt"
 
     synology:
       rule: "Host(`files.picklemustard.dev`)"
+      middlewares:
+        - forward-auth
       service: "synology"
       entryPoints:
         - "websecure"
@@ -123,6 +137,8 @@ http:
 
     synology_drive:
       rule: "Host(`drive.picklemustard.dev`)"
+      middlewares:
+        - forward-auth
       service: "synology_drive"
       entryPoints:
         - "websecure"
@@ -131,31 +147,19 @@ http:
 
     truenas:
       rule: "Host(`truenas.picklemustard.dev`)"
+      middlewares:
+        - forward-auth
       service: "truenas"
       entryPoints:
         - "websecure"
       tls:
         certResolver: "letsencrypt"
 
-    default:
-      rule: HostRegexp(`{catchall:.*}`)
-      service: "andromeda"
-      entryPoints:
-        - "websecure"
-      tls:
-        certResolver: "letsencrypt"
-
   services:
-    testing:
-      loadBalancer:
-        servers:
-          - url: "https://testing.testing.picklemustard.dev"
-        passHostHeader: true
-
     adguard:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.253/"
+          - url: "http://192.168.1.253"
 
     dashboard:
       loadBalancer:
@@ -171,7 +175,7 @@ http:
     andromeda-secure:
       loadBalancer:
         servers:
-          - url: "https://192.168.1.142"
+          - url: "https://andromeda.picklemustard.dev"
         passHostHeader: true
 
 
@@ -209,11 +213,16 @@ http:
   middlewares:
     forward-auth:
       forwardAuth:
-        address: 'https://auth.picklemustard.dev/api/authz/forward-auth/'
-        trustForwardHeader: 'true'
+        address: 'https://auth.picklemustard.dev/api/authz/ext-authz?redirect_url'
+        trustForwardHeader: true
+        preserveLocationHeader: true
+        forwardBody: true
         authResponseHeaders: 
-        authRequestHeaders:
-        preserveRequestMethod: 'true'
+          - 'Remote-User'
+          - 'Remote-Groups'
+          - 'Remote-Email'
+          - 'Remote-Name'
+          - 'Set-Cookie'
     auth:
       basicAuth:
         users:
@@ -259,7 +268,7 @@ tcp:
     mail-imaps:
       entryPoints:
         - "mail-imaps"
-      rule: "HostSNI(`*`)"
+      rule: "HostSNI(`picklemustard.dev`)"
       service: "mail-imaps"
       tls:
         certResolver: "letsencrypt"
@@ -271,7 +280,7 @@ tcp:
     mail-pop3s:
       entryPoints:
         - "mail-pop3s"
-      rule: "HostSNI(`*`)"
+      rule: "HostSNI(`picklemustard.dev`)"
       service: "mail-pop3s"
       tls:
         certResolver: "letsencrypt"
@@ -283,7 +292,7 @@ tcp:
     mail-submissions:
       entryPoints:
         - "mail-submissions"
-      rule: "HostSNI(`*`)"
+      rule: "HostSNI(`picklemustard.dev`)"
       service: "mail-submissions"
       tls:
         certResolver: "letsencrypt"
