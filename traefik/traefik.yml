@@ -44,6 +44,8 @@ entryPoints:
     address: ":587"
   mail-submissions:
     address: ":465"
+  ldap: 
+    address: ":389"
 
 
 api:

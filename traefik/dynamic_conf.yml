@@ -5,17 +5,6 @@ http:
       insecureSkipVerify: true
 
   routers:
-    testing:
-      rule: "Host(`testing.picklemustard.dev`)"
-      service: "testing"
-      entryPoints: 
-        - "websecure"
-      tls:
-        certResolver: "letsencrypt"
-      observability:
-        tracing: true
-        metrics: true
-
     andromeda:
       rule: "Host(`andromeda.picklemustard.dev`)"
       entryPoints:
@@ -29,8 +18,6 @@ http:
 
     adguard:
       rule: "Host(`adguard.picklemustard.dev`)"
-      middlewares:
-        - forward-auth
       service: "adguard"
       entryPoints:
         - "websecure"
@@ -39,8 +26,6 @@ http:
 
     mail-admin:
       rule: "Host(`mail.picklemustard.dev`)"
-      middlewares:
-        - forward-auth
       service: andromeda
       entryPoints:
         - "websecure"
@@ -67,10 +52,16 @@ http:
         certResolver: "letsencrypt"
       service: andromeda
 
+    rancher:
+      rule: Host(`rancher.picklemustard.dev`)
+      entryPoints:
+        - "websecure"
+      tls: 
+        certResolver: "letsencrypt"
+      service: andromeda
+
     traefik-kube:
-      rule: Host(`traefik-kube.picklemustard.dev`)
-      middlewares:
-        - forward-auth
+      rule: "Host(`kubetraefik.picklemustard.dev`)"
       service: andromeda
       entryPoints:
         - "websecure"
@@ -79,8 +70,6 @@ http:
 
     lldap:
       rule: Host(`lldap.picklemustard.dev`)
-      middlewares:
-        - forward-auth
       service: andromeda
       entryPoints:
         - "websecure"
@@ -103,8 +92,6 @@ http:
 
     nextcloud:
       rule: Host(`nextcloud.picklemustard.dev`)
-      middlewares:
-        - forward-auth
       service: "andromeda"
       entryPoints:
         - "websecure"
@@ -115,13 +102,19 @@ http:
       entryPoints:
         - "websecure"
 
+    redis:
+      rule: Host(`redis.picklemustard.dev`)
+      service: "andromeda"
+      entryPoints:
+        - "websecure"
+
     dashboard:
       rule: "Host(`traefik.picklemustard.dev`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
       service: "api@internal"
+      middlewares:
+        - auth
       entryPoints:
         - "websecure"
-      middlewares:
-        - forward-auth
       tls:
         certResolver: "letsencrypt"
 
@@ -170,6 +163,12 @@ http:
       loadBalancer:
         servers:
           - url: "http://192.168.1.142"
+        passHostHeader: true
+
+    andromeda-dashboard:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.142:8080"
         passHostHeader: true
 
     andromeda-secure:
@@ -248,13 +247,10 @@ tcp:
       tls:
         certResolver: "letsencrypt"
     ldap:
-      rule: "HostSNI(`user.picklemustard.dev`)"
+      rule: "HostSNI(`*`)"
       service: "ldap"
       entryPoints:
-        - "web"
-        - "websecure"
-      tls:
-        certResolver: "letsencrypt"
+        - "ldap"
     mail-smtp:
       entryPoints:
         - "mail-smtp"
@@ -287,8 +283,11 @@ tcp:
     mail-submission:
       entryPoints:
         - "mail-submission"
-      rule: "HostSNI(`*`)"
+      rule: "HostSNI(`picklemustard.dev`)"
       service: "mail-submission"
+      tls:
+        certResolver: "letsencrypt"
+        passthrough: true
     mail-submissions:
       entryPoints:
         - "mail-submissions"
@@ -296,6 +295,7 @@ tcp:
       service: "mail-submissions"
       tls:
         certResolver: "letsencrypt"
+        passthrough: true
     mail-sieve:
       entryPoints: 
         - "mail-sieve"
@@ -305,40 +305,39 @@ tcp:
     ldap:
       loadBalancer:
         servers:
-          - address: "ldap://192.168.1.142"
-
+          - address: "192.168.1.142:3890"
     mail-smtp:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:30662"
+          - address: "192.168.1.142:25"
     mail-submissions:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:31230"
+          - address: "192.168.1.142:10465"
     mail-submission:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:32662"
+          - address: "192.168.1.142:10587"
     mail-imap:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:31955"
+          - address: "192.168.1.142:143"
     mail-imaps:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:32119"
+          - address: "192.168.1.142:994"
     mail-pop3:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:30712"
+          - address: "192.168.1.142:110"
     mail-pop3s:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:31710"
+          - address: "192.168.1.142:995"
     mail-sieve:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:32129"
+          - address: "192.168.1.142:4190"
     postgres:
       loadBalancer:
         servers:
