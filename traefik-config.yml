@@ -11,6 +11,9 @@ spec:
         defaultCertificate:
           secretName: picklemustard-dev-tls
 
+            # ingressRoute:
+            #   dashboard:
+            #     enabled: false
     ports:
       web:
         forwardedHeaders:
@@ -20,42 +23,66 @@ spec:
             to: websecure
             scheme: https
             permanent: true
-      websecure:
-        forwardedHeaders:
-          insecure: true
     logs:
       level: DEBUG
       access:
         enabled: true
-    #service:
-    #  spec:
-    #    externalTrafficPolicy: Local
+    service:
+      spec:
+        externalTrafficPolicy: Local
 
     dashboard:
       enabled: true
       insecure: true
 
     deployment:
-      kind: DaemonSet
-    hostNetwork: true
+      kind: Deployment
+    hostNetwork: false
 
     updateStrategy:
       type: RollingUpdate
       rollingUpdate:
         maxUnavailable: 2
-        maxSurge:
+        maxSurge: 
 
     additionalArguments:
       - "--entryPoints.ldap.address=:3890/tcp"
-      - "--entryPoints.imaps.address=:10993/tcp"
-      - "--entryPoints.pop3s.address=:10995/tcp"
-      - "--entryPoints.smtp.address=:10025/tcp"
-      - "--entryPoints.smtps.address=:10465/tcp"
-      - "--serversTransport.insecureSkipVerify=true"
       - "--entryPoints.websecure.http.tls=true"
-      - "--api"
       - "--api.dashboard=true"
       - "--api.insecure=true"
+        # extraObjects:
+        #   - apiVersion: v1
+        #     kind: Service
+        #     metadata:
+        #       name: traefik-api
+        #     spec:
+        #       type: ClusterIP
+        #       selector:
+        #         app.kubernetes.io/name: traefik
+        #         app.kubernetes.io/instance: traefik-default
+        #       ports:
+        #       - port: 8080
+        #         name: traefik
+        #         targetPort: 8080
+        #         protocol: TCP
+              #- apiVersion: networking.k8s.io/v1
+              #    kind: Ingress
+              #    metadata:
+              #      name: traefik-dashboard
+              #      annotations:
+              #        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+              #    spec:
+              #      rules:
+              #      - host: traefik-dashboard.picklemustard.dev
+              #        http:
+              #          paths:
+              #          - path: /
+              #            pathType: Prefix
+              #            backend:
+              #              service:
+              #                name: traefik-api
+              #                port:
+              #                  name: traefik
 
 # See https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml for more examples
 # The deployment.kind=DaemonSet and hostNetwork=true is to get real ip and x-forwarded for,

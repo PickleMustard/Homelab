@@ -10,7 +10,7 @@ metadata:
     spec.ingressClassName: traefik
 spec:
   rules:
-    - host: rancher.andromeda.picklemustard.dev
+    - host: rancher.picklemustard.dev
       http:
         paths:
           - path: /

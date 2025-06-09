@@ -1,18 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    deployment.kubernetes.io/revision: '1'
-  creationTimestamp: '2025-05-14T00:08:55Z'
-  generation: 2
   labels:
     app.kubernetes.io/instance: stalwart
     app.kubernetes.io/name: stalwart
     app.kubernetes.io/version: 0.12.1
   name: stalwart
   namespace: stalwart
-  resourceVersion: '8853554'
-  uid: 75eaf38e-77d2-4841-a431-bd2a5f1153ad
 spec:
   progressDeadlineSeconds: 600
   replicas: 1

@@ -8,7 +8,7 @@ metadata:
     spec.ingressClassName: traefik
 spec:
   rules:
-    - host: lldap.andromeda.picklemustard.dev
+    - host: lldap.picklemustard.dev
       http:
         paths:
           - path: /

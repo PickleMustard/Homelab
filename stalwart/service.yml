@@ -9,12 +9,7 @@ metadata:
     app.kubernetes.io/version: 0.12.1
   name: stalwart
   namespace: stalwart
-  resourceVersion: '8853076'
-  uid: e46f85fc-fed2-4b02-8464-5a36bb6f99fd
 spec:
-  clusterIP: 10.43.24.232
-  clusterIPs:
-    - 10.43.24.232
   internalTrafficPolicy: Cluster
   ipFamilies:
     - IPv4
@@ -64,4 +59,4 @@ spec:
     app.kubernetes.io/instance: stalwart
     app.kubernetes.io/name: stalwart
   sessionAffinity: None
-  type: NodePort
+  type: ClusterIP

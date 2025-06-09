@@ -1,0 +1,21 @@
+apiVersion: shulkermc.io/v1alpha1
+kind: ProxyFleet
+metadata:
+  name: public
+  namespace: minecraft
+  labels:
+    app.kubernetes.io/instance: public-proxy
+    app.kubernetes.io/name: public-proxy
+spec:
+  clusterRef:
+    name: basecluster
+  replicas: 1
+  service:
+    type: LoadBalancer
+    externalTrafficPolicy: Local
+  template:
+    spec:
+      version:
+        channel: Velocity
+        name: latest
+      config: {}

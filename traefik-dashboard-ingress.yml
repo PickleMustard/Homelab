@@ -5,8 +5,15 @@ metadata:
   namespace: kube-system
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
-      #traefik.ingress.kubernetes.io/router.tls: true
-    spec.ingressClassName: traefik
 spec:
   rules:
-    - host: traefik.andromeda.picklemustard.dev 
+    - host: kubetraefik.picklemustard.dev 
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: traefik-dashboard
+                port:
+                  name: traefik

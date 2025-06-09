@@ -1,0 +1,64 @@
+apiVersion: shulkermc.io/v1alpha1
+kind: MinecraftServerFleet
+metadata:
+  name: lobby
+  namespace: minecraft
+spec:
+  clusterRef:
+    name: basecluster
+  replicas: 1
+  template:
+    spec:
+      clusterRef:
+        name: basecluster
+      tags:
+        - lobby
+      version:
+        channel: Paper
+        name: '1.20.2'
+        customJar:
+          url: https://api.mohistmc.com/project/mohist/1.20.1/builds/130/download
+      config:
+        existingConfigMapName: server-properties
+      podOverrides:
+        volumeMounts:
+          - mountPath: /mod-config
+            name: config-dir
+          - mountPath: /mods
+            name: mod-dir
+          - mountPath: /defaultconfigs
+            name: default-configs-dir
+          - mountPath: /modernfix
+            name: modern-fix-dir
+          - mountPath: /config/bukkit.yml
+            name: bukkit-config
+            subPath: bukkit.yml
+          - mountPath: /config/spigot.yml
+            name: spigot-config
+            subPath: spigot.yml
+        volumes:
+        - hostPath:
+            type: "Directory"
+            path: "/srv/media/steampunk_lps/SteamPunk_LPS_-_1.20_Update_v15.5_serverpack/mods" 
+          name: mod-dir
+        - hostPath:
+            type: "Directory"
+            path: "/srv/media/steampunk_lps/SteamPunk_LPS_-_1.20_Update_v15.5_serverpack/config"
+          name: config-dir
+        - hostPath: 
+            type: "Directory"
+            path: "/srv/media/steampunk_lps/SteamPunk_LPS_-_1.20_Update_v15.5_serverpack/defaultconfigs"
+          name: default-configs-dir
+        - hostPath:
+            type: "Directory"
+            path: "/srv/media/steampunk_lps/SteamPunk_LPS_-_1.20_Update_v15.5_serverpack/modernfix"
+          name: modern-fix-dir
+        - configMap:
+            defaultMode: 0644
+            name: bukkit-config
+          name: bukkit-config
+        - configMap:
+            defaultMode: 0644
+            name: spigot-config
+          name: spigot-config
+

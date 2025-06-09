@@ -1,3 +1,0 @@
-configMap:
-  enabled: true
-  key: "configuration.yml"

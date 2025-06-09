@@ -5,13 +5,16 @@ metadata:
     lldap: https://github.com/nitnelave/lldap
     k8s: https://github.com/Evantage-WS/lldap-kubernetes
   labels:
-    app: lldap
+    app.kubernetes.io/instance: lldap
+    app.kubernetes.io/name: lldap
   name: lldap
+  namespace: lldap
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: lldap
+      app.kubernetes.io/instance: lldap
+      app.kubernetes.io/name: lldap
   strategy:
     type: Recreate
   template:
@@ -20,7 +23,8 @@ spec:
         lldap: https://github.com/nitnelave/lldap
         k8s: https://github.com/Evantage-WS/lldap-kubernetes
       labels:
-        app: lldap
+        app.kubernetes.io/instance: lldap
+        app.kubernetes.io/name: lldap
     spec:
       containers:
         - env:

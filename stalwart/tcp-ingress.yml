@@ -1,0 +1,151 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: stalwart-smtp-tcp-route
+  namespace: stalwart
+  labels:
+    app.kubernetes.io/name: stalwart-smtp-tcp-route
+    app.kubernetes.io/instance: stalwart
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: smtp
+    spec.ingressClassName: traefik
+spec:
+  entryPoints:
+    - smtp
+  routes:
+  - match: "HostSNI(`*`)"
+    services:
+      - name: stalwart
+        port: 25
+        nativeLB: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: stalwart-submission-tcp-route
+  namespace: stalwart
+  labels:
+    app.kubernetes.io/name: stalwart-submission-tcp-route
+    app.kubernetes.io/instance: stalwart
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: submission
+    spec.ingressClassName: traefik
+spec:
+  entryPoints:
+    - submission
+  routes:
+  - match: "HostSNI(`*`)"
+    services:
+      - name: stalwart
+        port: 587
+  tls:
+    passthrough: true
+    secretName: picklemustard-dev-tls-stalwart
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: stalwart-submissions-tcp-route
+  namespace: stalwart
+  labels:
+    app.kubernetes.io/name: stalwart-submissions-tcp-route
+    app.kubernetes.io/instance: stalwart
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: submissions
+    spec.ingressClassName: traefik
+spec:
+  entryPoints:
+    - submissions
+  routes:
+  - match: "HostSNI(`*`)"
+    services:
+      - name: stalwart
+        port: 465
+        nativeLB: true
+  tls:
+    passthrough: true
+    secretName: picklemustard-dev-tls-stalwart
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: stalwart-pop3-tcp-route
+  namespace: stalwart
+  labels:
+    app.kubernetes.io/name: stalwart-pop3-tcp-route
+    app.kubernetes.io/instance: stalwart
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: pop3
+    spec.ingressClassName: traefik
+spec:
+  entryPoints:
+    - pop3 
+  routes:
+  - match: "HostSNI(`*`)"
+    services:
+      - name: stalwart
+        port: 110
+        nativeLB: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: stalwart-pop3s-tcp-route
+  namespace: stalwart
+  labels:
+    app.kubernetes.io/name: stalwart-pop3s-tcp-route
+    app.kubernetes.io/instance: stalwart
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: pop3s
+    spec.ingressClassName: traefik
+spec:
+  entryPoints:
+    - pop3s
+  routes:
+  - match: "HostSNI(`*`)"
+    services:
+      - name: stalwart
+        port: 995
+        nativeLB: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: stalwart-imap-tcp-route
+  namespace: stalwart
+  labels:
+    app.kubernetes.io/name: stalwart-imap-tcp-route
+    app.kubernetes.io/instance: stalwart
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: imap
+    spec.ingressClassName: traefik
+spec:
+  entryPoints:
+    - imap
+  routes:
+  - match: "HostSNI(`*`)"
+    services:
+      - name: stalwart
+        port: 143
+        nativeLB: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: stalwart-imaps-tcp-route
+  namespace: stalwart
+  labels:
+    app.kubernetes.io/name: stalwart-imaps-tcp-route
+    app.kubernetes.io/instance: stalwart
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: imaps
+    spec.ingressClassName: traefik
+spec:
+  entryPoints:
+    - imaps
+  routes:
+  - match: "HostSNI(`*`)"
+    services:
+      - name: stalwart
+        port: 993
+        nativeLB: true

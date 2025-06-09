@@ -281,7 +281,7 @@ data:
     notifier:
       disable_startup_check: false
       smtp:
-        address: 'submission://picklemustard.dev:587'
+        address: 'submissions://picklemustard.dev:465'
         timeout: '5s'
         username: 'postmaster'
           #password: '{{ env "POSTMASTER_PASSWORD" }}'

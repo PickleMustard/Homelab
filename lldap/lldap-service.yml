@@ -5,8 +5,10 @@ metadata:
     lldap: https://github.com/nitnelave/lldap
     k8s: https://github.com/Evantage-WS/lldap-kubernetes
   labels:
-    app: lldap-service
+    app.kubernetes.io/instance: lldap-service
+    app.kubernetes.io/name: lldap-service
   name: lldap-service
+  namespace: lldap
 spec:
   ports:
     - name: "3890"
@@ -16,4 +18,5 @@ spec:
       port: 17170
       targetPort: 17170
   selector:
-    app: lldap
+    app.kubernetes.io/instance: lldap
+    app.kubernetes.io/name: lldap
