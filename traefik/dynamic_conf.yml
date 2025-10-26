@@ -24,6 +24,14 @@ http:
       tls:
         certResolver: "letsencrypt"
 
+    sonarr:
+      rule: "Host(`media-docs.picklemustard.dev`)"
+      service: andromeda
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
     mail-admin:
       rule: "Host(`mail.picklemustard.dev`)"
       service: andromeda
@@ -120,8 +128,6 @@ http:
 
     synology:
       rule: "Host(`files.picklemustard.dev`)"
-      middlewares:
-        - forward-auth
       service: "synology"
       entryPoints:
         - "websecure"
@@ -130,8 +136,6 @@ http:
 
     synology_drive:
       rule: "Host(`drive.picklemustard.dev`)"
-      middlewares:
-        - forward-auth
       service: "synology_drive"
       entryPoints:
         - "websecure"
@@ -177,7 +181,6 @@ http:
           - url: "https://andromeda.picklemustard.dev"
         passHostHeader: true
 
-
     lldap-service:
       loadBalancer:
         servers:
@@ -210,6 +213,7 @@ http:
             name: "truenas-session"
 
   middlewares:
+
     forward-auth:
       forwardAuth:
         address: 'https://auth.picklemustard.dev/api/authz/ext-authz?redirect_url'
@@ -246,6 +250,11 @@ tcp:
         - "websecure"
       tls:
         certResolver: "letsencrypt"
+    minecraft:
+      rule: "HostSNI(`*`)"
+      service: "minecraft"
+      entryPoints:
+        - "minecraft"
     ldap:
       rule: "HostSNI(`*`)"
       service: "ldap"
@@ -302,6 +311,10 @@ tcp:
       rule: "HostSNI(`*`)"
       service: "mail-sieve"
   services:
+    minecraft:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.142:25565"
     ldap:
       loadBalancer:
         servers:

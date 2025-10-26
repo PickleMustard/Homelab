@@ -5,6 +5,21 @@ global:
     #tracing:
     #  addInternals: true
 
+accessLog:
+  filePath: "/logs/traefik.log"
+  format: json
+  filters:
+    statusCodes:
+      - "200"
+      - "400-599"
+    retryAttempts: true
+    minDuration: "10ms"
+  bufferingSize: 0
+  fields:
+    headers:
+      defaultMode: drop
+      names:
+        User-Agent: keep
 log:
   level: TRACE
 
@@ -46,6 +61,8 @@ entryPoints:
     address: ":465"
   ldap: 
     address: ":389"
+  minecraft:
+    address: ":25565"
 
 
 api:
