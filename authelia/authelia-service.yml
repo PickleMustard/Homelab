@@ -4,13 +4,9 @@ metadata:
   name: authelia-service
   namespace: lldap
 spec:
-  type: NodePort
+  type: ClusterIP
   sessionAffinity: None
-    #clusterIP: 10.43.181.178
-    #clusterIPs:
-    #  - 10.43.181.177
   internalTrafficPolicy: Cluster
-  externalTrafficPolicy: Local
   ipFamilies:
     - IPv4
   ipFamilyPolicy: SingleStack

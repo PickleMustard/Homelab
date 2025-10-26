@@ -10,7 +10,7 @@ data:
   server.properties: |
 
     accept-transfers=false
-    allow-flight=false
+    allow-flight=true
     allow-nether=true
     broadcast-console-to-ops=true
     broadcast-rcon-to-ops=true
@@ -20,7 +20,7 @@ data:
     enable-command-block=true
     enable-jmx-monitoring=false
     enable-query=false
-    enable-rcon=false
+    enable-rcon=true
     enable-status=true
     enforce-secure-profile=true
     enforce-whitelist=true
@@ -34,8 +34,8 @@ data:
     hide-online-players=false
     initial-disabled-packs=
     initial-enabled-packs=vanilla
-    level-name=world
-    level-seed=
+    level-name=All-Of-Create
+    level-seed=HIDWmqX2SEWlYUA5
     level-type=minecraft:normal
     log-ips=true
     max-chained-neighbor-updates=1000000
@@ -52,7 +52,7 @@ data:
     pvp=true
     query.port=25565
     rate-limit=0
-    rcon.password=
+    rcon.password=minecraft
     rcon.port=25575
     region-file-compression=deflate
     require-resource-pack=false
@@ -70,4 +70,4 @@ data:
     text-filtering-version=0
     use-native-transport=true
     view-distance=10
-    white-list=false
+    white-list=true

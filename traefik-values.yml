@@ -28,6 +28,14 @@ ports:
     expose:
       default: true
     protocol: TCP
+
+  minecraft:
+    port: 25565
+    exposedPort: 25565
+    expose:
+      default: true
+    protocol: TCP
+
   smtp:
     port: 25
     exposedPort: 25
@@ -85,15 +93,13 @@ ports:
     protocol: TCP
 
   web:
-    port: 8000
+    port: 80
     forwardedHeaders:
       insecure: true
     proxyProtocol:
       insecure: true
 
   websecure:
-    http3:
-      enabled: true
     tls:
       enabled: true
 

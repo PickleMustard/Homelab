@@ -48,6 +48,7 @@ spec:
     additionalArguments:
       - "--entryPoints.ldap.address=:3890/tcp"
       - "--entryPoints.websecure.http.tls=true"
+      - "--entryPoints.websecure.address=:143/tcp"
       - "--api.dashboard=true"
       - "--api.insecure=true"
         # extraObjects:

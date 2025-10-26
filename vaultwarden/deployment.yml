@@ -46,6 +46,16 @@ spec:
               value: "postgresql://postgres_fid:n&frpqaTRnN95?pr@postgres-postgresql.postgres.svc.cluster.local:5432/vaultwarden"
             - name: DOMAIN
               value: "https://vault.picklemustard.dev"
+            - name: PUSH_ENABLED
+              value: "true"
+            - name: PUSH_INSTALLATION_ID
+              value: "857942b3-0c8f-406f-8428-b31d011b4088"
+            - name: PUSH_INSTALLATION_KEY
+              value: "93pqeVmqADJMUNOxk8ki"
+            - name: PUSH_RELAY_URI
+              value: "https://vault.picklemustard.dev/notifications"
+            - name: PUSH_IDENTITY_URI
+              value: "https://vault.picklemustard.dev/identity"
             - name: ROCKET_PORT
               value: "80"
             - name: SENDS_ALLOWED
