@@ -1,0 +1,81 @@
+apiVersion: shulkermc.io/v1alpha1
+kind: MinecraftServerFleet
+metadata:
+  name: lobby
+  namespace: minecraft
+spec:
+  clusterRef:
+    name: basecluster
+  replicas: 1
+  template:
+    spec:
+      clusterRef:
+        name: basecluster
+      tags:
+        - lobby
+      version:
+        channel: Paper
+        name: '2.4.1'
+        customJar:
+          url: https://github.com/TeamAOF/ServerStarter/releases/download/v2.4.1/serverstarter-2.4.1.jar
+      config:
+        existingConfigMapName: server-properties
+        lifecycleStrategy: Manual
+      podOverrides:
+        volumeMounts:
+          - mountPath: /config/server-setup-config.yaml
+            name: setup-config
+          - mountPath: /config/eula.txt
+            name: eula
+          #- mountPath: /data/config/
+          #  name: config-dir
+          #- mountPath: /mods
+          #  name: mod-dir
+          #- mountPath: /defaultconfigs
+          #  name: default-configs-dir
+          #- mountPath: /modernfix
+          #  name: modern-fix-dir
+          #- mountPath: /server-config/bukkit.yml
+          #  name: bukkit-config
+          #  subPath: bukkit.yml
+          #- mountPath: /server-config/spigot.yml
+          #  name: spigot-config
+          #  subPath: spigot.yml
+        volumes:
+          #- hostPath:
+          #    type: "File"
+          #    path: "/srv/media/steampunk_lps/SteamPunk_LPS_-_1.20_Update_v15.5_serverpack/manifest.json"
+          #  name: manifest
+        - hostPath:
+            type: "File"
+            path: "/srv/media/craftoria-1.21.1/server-setup-config.yaml"
+          name: setup-config
+        - hostPath:
+            type: "File"
+            path: "/srv/media/craftoria-1.21.1/eula.txt"
+          name: eula
+            #- hostPath:
+            #    type: "DirectoryOrCreate"
+            #    path: "/srv/media/craftoria-1.21.1/mods" 
+            #  name: mod-dir
+          #- hostPath:
+          #    type: "DirectoryOrCreate"
+          #    path: "/srv/media/steampunk_lps/SteamPunk_LPS_-_1.20_Update_v15.5_serverpack/config"
+          #  name: config-dir
+          #- hostPath: 
+          #    type: "DirectoryOrCreate"
+          #    path: "/srv/media/steampunk_lps/SteamPunk_LPS_-_1.20_Update_v15.5_serverpack/defaultconfigs"
+          #  name: default-configs-dir
+          #- hostPath:
+          #    type: "DirectoryOrCreate"
+          #    path: "/srv/media/steampunk_lps/SteamPunk_LPS_-_1.20_Update_v15.5_serverpack/modernfix"
+          #  name: modern-fix-dir
+          #- configMap:
+          #    defaultMode: 0644
+          #    name: bukkit-config
+          #  name: bukkit-config
+          #- configMap:
+          #    defaultMode: 0644
+          #    name: spigot-config
+          #  name: spigot-config
+

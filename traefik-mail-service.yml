@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-mail-services
+  namespace: kube-system # Change this to your namespace
+spec:
+  type: LoadBalancer  # Or NodePort/ClusterIP based on your setup
+  ports:
+    - name: imaps
+      port: 993  # External privileged port
+      targetPort: 10993  # Internal non-privileged port
+      protocol: TCP
+    - name: pop3s
+      port: 995
+      targetPort: 10995
+      protocol: TCP
+    - name: smtps
+      port: 465
+      targetPort: 10465
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: traefik
+    app.kubernetes.io/instance: traefik-kube-system

@@ -1,0 +1,141 @@
+globalArguments:
+  - "--global.sendanonymoususage=false"
+  - "--global.checknewversion=false"
+  - "--api.dashboard=true"
+  - "--api.insecure=true"
+
+additionalArguments:
+  - "--serversTransport.insecureSkipVerify=true"
+  - "--log.level=TRACE"
+
+deployment:
+  enabled: true
+  replicas: 1
+
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+  name: "traefik"
+
+tlsStore:
+  default:
+    defaultCertificate: 
+      secretName: picklemustard-dev-tls
+ports:
+  ldap:
+    port: 3890
+    exposedPort: 3890
+    expose:
+      default: true
+    protocol: TCP
+
+  minecraft:
+    port: 25565
+    exposedPort: 25565
+    expose:
+      default: true
+    protocol: TCP
+
+  smtp:
+    port: 25
+    exposedPort: 25
+    expose:
+      default: true
+    protocol: TCP
+
+  imap:
+    port: 143
+    exposedPort: 143
+    expose:
+      default: true
+    protocol: TCP
+
+  imaps:
+    port: 993
+    exposedPort: 993
+    expose:
+      default: true
+    protocol: TCP
+
+  pop3:
+    port: 110
+    exposedPort: 110
+    expose:
+      default: true
+    protocol: TCP
+
+  pop3s:
+    port: 995
+    exposedPort: 995
+    expose:
+      default: true
+    protocol: TCP
+
+  sieve:
+    port: 4190
+    exposedPort: 4190
+    expose:
+      default: true
+    protocol: TCP
+
+  submission:
+    port: 587 
+    exposedPort: 10587
+    expose:
+      default: true
+    protocol: TCP
+
+  submissions:
+    port: 465
+    exposedPort: 10465
+    expose:
+      default: true
+    protocol: TCP
+
+  web:
+    port: 80
+    forwardedHeaders:
+      insecure: true
+    proxyProtocol:
+      insecure: true
+
+  websecure:
+    tls:
+      enabled: true
+
+gateway:
+  enabled: true
+  name: "traefik-gateway"
+  listeners:
+    web:
+      port: 8000
+      protocol: HTTP
+    ldap:
+      port: 3890
+      protocol: TCP
+      
+ingressRoute:
+  dashboard:
+    enabled: true
+    matchRule: "Host(`traefik-kube.picklemustard.dev`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+    services:
+      - name: api@internal
+        kind: TraefikService
+    entryPoints: ["web", "websecure"]
+
+providers:
+  kubernetesCRD:
+    enabled: true
+    allowCrossNamespace: true
+    namespace: []
+  kubernetesIngress:
+    enabled: true
+
+rbac:
+  enabled: true
+
+service:
+  enabled: true
+  type: LoadBalancer
+  spec:
+    loadBalancerIP: 192.168.1.142 # this should be an IP in the MetalLB range

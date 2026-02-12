@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: '1'
+  creationTimestamp: '2025-05-14T00:08:55Z'
+  generation: 2
+  labels:
+    app.kubernetes.io/instance: vaultwarden
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/version: 0.12.1
+  name: vaultwarden
+  namespace: vaultwarden
+  resourceVersion: '8853554'
+  uid: 75eaf38e-77d2-4841-a431-bd2a5f1153ad
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: vaultwarden
+      app.kubernetes.io/name: vaultwarden
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        config-hash: 0a02636d3d5e536e3d6d51b2322267391032bd9ef519f8f611e47629168eaf44
+        secret-env-hash: e492605ea096fbf6ed4221221ac14cbc51b8fe6b88fb95ba5cb7021cb859fa09
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/instance: vaultwarden
+        app.kubernetes.io/name: vaultwarden
+        app.kubernetes.io/version: 0.11.8
+    spec:
+      containers:
+        - image: ghcr.io/dani-garcia/vaultwarden:latest
+          imagePullPolicy: IfNotPresent
+          name: vaultwarden
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://postgres_fid:n&frpqaTRnN95?pr@postgres-postgresql.postgres.svc.cluster.local:5432/vaultwarden"
+            - name: DOMAIN
+              value: "https://vault.picklemustard.dev"
+            - name: PUSH_ENABLED
+              value: "true"
+            - name: PUSH_INSTALLATION_ID
+              value: "857942b3-0c8f-406f-8428-b31d011b4088"
+            - name: PUSH_INSTALLATION_KEY
+              value: "93pqeVmqADJMUNOxk8ki"
+            - name: PUSH_RELAY_URI
+              value: "https://vault.picklemustard.dev/notifications"
+            - name: PUSH_IDENTITY_URI
+              value: "https://vault.picklemustard.dev/identity"
+            - name: ROCKET_PORT
+              value: "80"
+            - name: SENDS_ALLOWED
+              value: "true"
+            - name: ADMIN_TOKEN
+              value: "$argon2id$v=19$m=65540,t=3,p=4$xtZzcy0HbferRJ6v4sPOKXXqpenNU0fb+reWLT02QvA$J1FIUiNggZH8GlzMfqTCYxNmKA5SNCQDNOY/xXxazZg"
+            - name: SMTP_HOST
+              value: "picklemustard.dev"
+            - name: SMTP_FROM
+              value: "vaultwarden@picklemustard.dev"
+            - name: SMTP_FROM_NAME
+              value: "Vaultwarden"
+            - name: SMTP_USERNAME
+              value: "vaultwarden"
+            - name: SMTP_PASSWORD
+              value: "z$A4cb?x3ng9a?&h"
+            - name: SMTP_SECURITY
+              value: "starttls"
+            - name: SMTP_PORT
+              value: "587"
+            - name: SMTP_AUTH_MECHANISM
+              value: "LOGIN"
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          resources: {}
+          securityContext: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: default
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30

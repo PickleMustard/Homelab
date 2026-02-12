@@ -1,0 +1,63 @@
+certificate:
+  certmanager:
+    enabled: false
+    dnsNames:
+      - "cert-manager"
+
+config:
+  storage:
+    blob: "postgresql"
+    data: "postgresql"
+    fts: "postgresql"
+    lookup: "postgresql"
+  store:
+    postgresql:
+      type: "postgresql"
+      host: "postgres-postgresql.postgres.svc.cluster.local"
+      port: 5432
+      database: "email"
+      user: "postgres_fid"
+      password: "n&frpqaTRnN95?pr"
+      timeout: "15s"
+directory:
+  ldap:
+    type: "ldap"
+    url: "ldap://192.168.1.142:3890"
+    base-dn: "dc=andromeda,dc=picklemustard,dc=dev"
+    timeout: "30s"
+ingress:
+  enabled: false
+  hosts:
+    - host: "mail.picklemustard.dev"
+      paths:
+        - path: "/"
+          pathType: "ImplementationSpecific"
+
+traefik:
+  enabled: true 
+  ports:
+    imaptls:
+      entrypoint: "imaps"
+      match: "HostSNI(`*`)"
+      passthroughTLS: true
+      proxyProtocol: true
+    pop3s:
+      entrypoint: "pop3s"
+      match: "HostSNI(`*`)"
+      passthroughTLS: true
+      proxyProtocol: true
+    sieve:
+      entrypoint: "sieve"
+      match: "HostSNI(`*`)"
+      passthroughTLS: true
+      proxyProtocol: true
+    smtp:
+      entrypoint: "smtp"
+      match: "HostSNI(`*`)"
+      proxyProtocol: true
+      passthroughTLS: true
+    smtps:
+      entrypoint: "smtps"
+      match: "HostSNI(`*`)"
+      passthroughTLS: true
+      proxyProtocol: true

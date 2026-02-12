@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lldap-ingress
+  namespace: lldap
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    spec.ingressClassName: traefik
+spec:
+  rules:
+    - host: lldap.picklemustard.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lldap-service
+                port:
+                  number: 17170
+

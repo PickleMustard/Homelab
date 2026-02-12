@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pterodactyl
+  namespace: pterodactyl
+  labels:
+    app.kubernetes.io/instance: pterodactyl-panel
+    app.kubernetes.io/name: pterodactyl-panel
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: pterodactyl-panel
+      app.kubernetes.io/name: pterodactyl-panel
+  replicas: 1
+  strategy: 
+    type: Recreate
+  revisionHistoryLimit: 2
+  progressDeadlineSeconds: 600
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: pterodactyl-panel
+        app.kubernetes.io/name: pterodactyl-panel
+      annotations:
+        deploy-date: "deploy-date-value"
+    spec:
+      containers:
+      - name: pterodactyl
+        image: ghcr.io/pterodactyl/panel:latest
+        ports:
+          - containerPort: 80
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres-passwd
+              name: pterodactyl-credentials
+        - name: DB_DATABASE
+          value: "pterodactyl"
+        - name: APP_ENV
+          value: "production"
+        - name: APP_ENVIRONMENT_ONLY
+          value: "false"
+        - name: CACHE_DRIVER
+          value: "redis"
+        - name: SESSION_DRIVER
+          value: "redis"
+        - name: QUEUE_DRIVER
+          value: "redis"
+        - name: REDIS_HOST
+          value: "redis-master.redis.svc.cluster.local" 
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: redis-passwd
+              name: pterodactyl-credentials
+        - name: DB_HOST
+          value: "postgres-postgresql.postgres.svc.cluster.local"
+        - name: DB_PORT
+          value: "5432"
+        - name: APP_URL
+          value: "https://pterodactyl.picklemustard.dev"
+        - name: APP_TIMEZONE
+          value: "UTC"
+        - name: APP_SERVICE_AUTHOR
+          value: "picklemustard@picklemustard.dev"
+        - name: TRUSTED_PROXIES
+          value: "*"
+        volumeMounts:
+        - mountPath: /app/var/
+          name: pterodactyl-app-content
+        - mountPath: /etc/nginx/http.d/
+          name: pterodactyl-nginx-content
+        - mountPath: /etc/letsencrypt/
+          name: pterodactyl-le-content
+        - mountPath: /app/storage/logs
+          name: pterodactyl-logs-content
+      volumes:
+      - name: pterodactyl-app-content
+        persistentVolumeClaim:
+          claimName:  pterodactyl-app-claim
+      - name: pterodactyl-nginx-content
+        persistentVolumeClaim:
+          claimName:  pterodactyl-nginx-claim
+      - name: pterodactyl-le-content
+        persistentVolumeClaim:
+          claimName:  pterodactyl-le-claim
+      - name: pterodactyl-logs-content
+        persistentVolumeClaim:
+          claimName:  pterodactyl-logs-claim

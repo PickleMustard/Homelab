@@ -1,0 +1,110 @@
+# JSON files - ignore all JSON data files
+*.json
+*.json*
+!package.json
+!package-lock.json
+!tsconfig.json
+!jsconfig.json
+!composer.json
+!composer.lock
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.db3
+*.s3db
+*.sl3
+*.mdb
+*.accdb
+*.dbf
+
+#Ignore adguard filters
+adguard/work/data/filters
+
+# SQL dumps and backups
+*.sql
+*.dump
+*.bak
+*.backup
+
+# NoSQL databases
+*.rdb
+*.aof
+*.log
+
+# Data files
+*.csv
+*.tsv
+*.dat
+*.data
+*.bin
+*.dump
+
+# Cache and temporary files
+*.cache
+*.tmp
+*.temp
+*~
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Log files
+*.log
+logs/
+log/
+
+secrets/
+torrent/
+
+# Kubernetes secrets files
+*-secrets.yml
+**/lldap-secrets.yml
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Environment variables (may contain sensitive data)
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node modules and dependencies
+node_modules/
+bower_components/
+
+# Build outputs
+dist/
+build/
+out/
+target/
+
+# Coverage reports and test data
+coverage/
+*.lcov
+.nyc_output/
