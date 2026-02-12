@@ -3,7 +3,10 @@ version: "3"
 networks:
   macvlan_network:
     external:
-      name: macvlan_network
+      name: static_address_network
+  bridge:
+    external:
+      name: adguard_bridge
 
 services:
   traefik:
@@ -12,11 +15,14 @@ services:
     restart: unless-stopped
     networks:
       macvlan_network:
-        ipv4_address: 192.168.1.254
+        ipv4_address: 192.168.200.200
+      bridge:
+        ipv4_address: 180.20.0.11
     ports:
       - "80:80"
       - "443:443"
       - "25:25"
+      - "2222:2222"
       - "4190:4190"
       - "465:465"
       - "587:587"
@@ -48,4 +54,3 @@ services:
       - "traefik.http.routers.traefik-secure.tls.domains[0].main=picklemustard.dev"
       - "traefik.http.routers.traefik-secure.tls.domains[0].sans=picklemustard.dev"
       - "traefik.http.routers.traefik-secure.service=api@internal"
-
