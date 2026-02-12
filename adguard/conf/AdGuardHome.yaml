@@ -108,9 +108,12 @@ filters:
     id: 2
 whitelist_filters: []
 user_rules:
-  - 192.168.200.253 adguard.home
-  - 192.168.200.200 picklemustard.dev
-  - 192.168.200.200 *.picklemustard.dev
+  - 192.168.1.253 adguard.home
+  - 192.168.1.254 localproxy.home
+  - 192.168.1.254 truenas.home
+  - 192.168.1.254 proxmox.home
+  - 192.168.1.254 picklemustard.dev
+  - 192.168.1.254 *.picklemustard.dev
 dhcp:
   enabled: false
   interface_name: ""
@@ -150,13 +153,35 @@ filtering:
   safebrowsing_block_host: standard-block.dns.adguard.com
   rewrites:
     - domain: adguard.local
-      answer: 192.168.200.253
+      answer: 192.168.1.253
     - domain: '*.adguard.local'
       answer: adguard.local
+    - domain: '*.localproxy.home'
+      answer: localproxy.home
+    - domain: router.asus.com
+      answer: 192.168.1.1
+    - domain: '*.router.asus.com'
+      answer: router.asus.com
     - domain: picklemustard.dev
-      answer: 192.168.200.200
+      answer: 192.168.1.254
     - domain: '*.picklemustard.dev'
-      answer: 192.168.200.200
+      answer: 192.168.1.254
+    - domain: testing.testing.picklemustard.dev
+      answer: 192.168.1.9
+    - domain: rancher.andromeda.picklemustard.home
+      answer: 192.168.1.142
+    - domain: authelia.andromeda.picklemustard.home
+      answer: 192.168.1.142
+    - domain: andromeda.picklemustard.dev
+      answer: 192.168.1.142
+    - domain: '*.andromeda.picklemustard.dev'
+      answer: andromeda.picklemustard.dev
+    - domain: traefik.andromeda.picklemustard.home
+      answer: 192.168.1.142
+    - domain: postgres.picklemustard.home
+      answer: 192.168.1.142
+    - domain: mail.picklemustard.home
+      answer: 192.168.1.142
   safe_fs_patterns:
     - /opt/adguardhome/work/userfilters/*
   safebrowsing_cache_size: 1048576

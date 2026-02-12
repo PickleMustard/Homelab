@@ -3,7 +3,7 @@ version: '3'
 networks:
   macvlan_network:
     external:
-      name: static_address_network
+      name: macvlan_network
 
 services:
   cloudflare-ddns:
@@ -14,10 +14,11 @@ services:
     read_only: true
     cap_drop: [all]
     security_opt: [no-new-privileges:true]
+    env_file:
+      - ../secrets/cloudflare-ddns.env
     environment:
-      - CLOUDFLARE_API_TOKEN=TDGfAkuM-pE_47qVxlF0fOA4KZKTA_cVVaypPBYo
-      - DOMAINS=picklemustard.dev,www.picklemustard.dev,*.picklemustard.dev,mail.picklemustard.dev
+      - DOMAINS=picklemustard.dev,www.picklemustard.dev,*.picklemustard.dev
       - PROXIED=true
     networks:
       macvlan_network:
-        ipv4_address: 192.168.200.201
+        ipv4_address: 192.168.1.201

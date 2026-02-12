@@ -1,0 +1,12 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: openproject-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: openproject
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /collab/plan

@@ -5,16 +5,17 @@ metadata:
   namespace: media
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
-    spec.ingressClassName: traefik
+      #traefik.ingress.kubernetes.io/router.middlewares: 'kube-system-strip-path-prefix@kubernetescrd,kube-system-readarr-x-forwarded-prefix@kubernetescrd'
 spec:
+  ingressClassName: traefik
   rules:
-    - host: media-docs.picklemustard.dev
+    - host: media.picklemustard.dev
       http:
         paths:
-          - path: /
+          - path: /docs/tv
             pathType: Prefix
             backend:
               service:
                 name: sonarr-service
                 port:
-                  number: 8989 
+                  number: 8989

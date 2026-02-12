@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: vaultwarden-service
+    app.kubernetes.io/name: vaultwarden-service
+  name: vaultwarden-service
+  namespace: vaultwarden
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "80"
+    prometheus.io/path: "/metrics"
+spec:
+  ports:
+    - name: "web"
+      port: 80 
+      targetPort: 80 
+  selector:
+    app.kubernetes.io/instance: vaultwarden
+    app.kubernetes.io/name: vaultwarden
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultwarden-headless
+  namespace: vaultwarden
+  labels:
+    app.kubernetes.io/instance: vaultwarden
+    app.kubernetes.io/name: vaultwarden
+spec:
+  clusterIP: None # This is what makes the service "Headless"
+  selector:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: vaultwarden
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP

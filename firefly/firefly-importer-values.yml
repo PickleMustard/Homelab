@@ -1,0 +1,5 @@
+replicaCount: 1
+trustedProxies: "**"
+fireflyiii:
+  url: "https://budget.picklemustard.dev"
+

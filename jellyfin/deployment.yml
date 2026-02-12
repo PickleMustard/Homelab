@@ -1,0 +1,46 @@
+# jellyfin-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin-deployment
+  namespace: media
+  labels:
+    app: jellyfin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      containers:
+        - name: jellyfin
+          image: jellyfin/jellyfin
+          ports:
+            - containerPort: 8096
+              name: http
+          volumeMounts:
+            - mountPath: /data
+              name: media-storage
+            - mountPath: /config
+              name: data-storage
+              subPath: jellyfin-config # Stores config in a sub-directory on the PVC
+            - mountPath: /config/system.xml
+              name: system-config-volume
+              subPath: system.xml
+          resources:
+            limits:
+              nvidia.com/gpu: 1 # Requesting a single NVIDIA GPU
+      volumes:
+        - name: media-storage
+          persistentVolumeClaim:
+            claimName: media-data
+        - name: data-storage
+          persistentVolumeClaim:
+            claimName: jellyfin-data
+        - name: system-config-volume
+          configMap:
+            name: jellyfin-system-config

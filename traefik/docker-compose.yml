@@ -3,10 +3,7 @@ version: "3"
 networks:
   macvlan_network:
     external:
-      name: static_address_network
-  bridge:
-    external:
-      name: adguard_bridge
+      name: macvlan_network
 
 services:
   traefik:
@@ -15,14 +12,11 @@ services:
     restart: unless-stopped
     networks:
       macvlan_network:
-        ipv4_address: 192.168.200.200
-      bridge:
-        ipv4_address: 180.20.0.11
+        ipv4_address: 192.168.1.254
     ports:
       - "80:80"
       - "443:443"
       - "25:25"
-      - "2222:2222"
       - "4190:4190"
       - "465:465"
       - "587:587"

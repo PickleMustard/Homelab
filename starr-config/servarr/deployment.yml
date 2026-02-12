@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: servarr
+    app.kubernetes.io/name: servarr
+  name: servarr
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: servarr
+      app.kubernetes.io/name: servarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: servarr
+        app.kubernetes.io/name: servarr
+    spec:
+      initContainers:
+      - name: setup-directories
+        image: busybox:latest
+        command: ["sh", "-c", "mkdir -p /config/sonarr /config/prowlarr /config/bazarr /config/radarr /config/readarr"]
+        volumeMounts:
+        - name: config-data
+          mountPath: /config
+      containers:
+        - image: lscr.io/linuxserver/sonarr:latest
+          name: sonarr
+          ports:
+            - containerPort: 8989 
+          volumeMounts:
+            - mountPath: /data
+              name: media-data
+            - mountPath: /config
+              name: config-data
+              subPath: sonarr
+          env:
+            - name: SONARR__POSTGRES__USER 
+              valueFrom:
+                secretKeyRef:
+                  name: sonarr-credentials
+                  key: postgres_user
+            - name: SONARR__POSTGRES__PASSWORD 
+              valueFrom:
+                secretKeyRef:
+                  name: sonarr-credentials
+                  key: postgres_pass
+            - name: SONARR__POSTGRES__MAINDB 
+              value: "media"
+            - name: SONARR__POSTGRES__HOST
+              value: "postgres-postgresql.postgres.svc.cluster.local"
+            - name: SONARR__POSTGRES__PORT
+              value: "5432"
+            - name: SONARR__SERVER__URLBASE
+              value: "/docs/tv"
+        - image: lscr.io/linuxserver/prowlarr:latest
+          name: prowlarr
+          ports:
+            - containerPort: 9696
+          env:
+            - name: PROWLARR__SERVER__URLBASE
+              value: "/docs/torrent"
+          volumeMounts:
+            - mountPath: /data
+              name: media-data
+            - mountPath: /config
+              name: config-data
+              subPath: prowlarr
+        - image: linuxserver/bazarr
+          name: bazarr
+          ports:
+            - containerPort: 6767
+          volumeMounts:
+            - mountPath: /data
+              name: media-data
+            - mountPath: /config
+              name: config-data
+              subPath: bazarr
+          env:
+            - name: BAZARR__SERVER__URLBASE
+              value: "/docs/subs"
+        - image: lscr.io/linuxserver/radarr:latest
+          name: radarr
+          ports:
+            - containerPort: 7878
+          volumeMounts:
+            - mountPath: /data
+              name: media-data
+            - mountPath: /config
+              name: config-data
+              subPath: radarr
+          env:
+            - name: RADARR__POSTGRES__USER
+              valueFrom:
+                secretKeyRef:
+                  name: sonarr-credentials
+                  key: postgres_user
+            - name: RADARR__POSTGRES__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sonarr-credentials
+                  key: postgres_pass
+            - name: RADARR__POSTGRES__MAINDB
+              value: "movies"
+            - name: RADARR__POSTGRES__HOST
+              value: "postgres-postgresql.postgres.svc.cluster.local"
+            - name: RADARR__POSTGRES__PORT
+              value: "5432"
+            - name: RADARR__SERVER__URLBASE
+              value: "/docs/movie"
+                #- image: lscr.io/linuxserver/readarr
+                #  name: readarr
+                #  ports:
+                #    - containerPort: 8787
+                #  volumeMounts:
+                #    - mountPath: /data
+                #      name: media-data
+                #    - mountPath: /config
+                #      name: config-data
+                #      subPath: readarr
+                #  env:
+                #    - name: READARR__POSTGRES__USER
+                #      valueFrom:
+                #        secretKeyRef:
+                #          name: sonarr-credentials
+                #          key: postgres_user
+                #    - name: READARR__POSTGRES__PASSWORD
+                #      valueFrom:
+                #        secretKeyRef:
+                #          name: sonarr-credentials
+                #          key: postgres_pass
+                #    - name: READARR__POSTGRES__MAINDB
+                #      value: "media"
+                #    - name: READARR__POSTGRES__HOST
+                #      value: "postgres-postgresql.postgres.svc.cluster.local"
+                #    - name: READARR__POSTGRES__PORT
+                #      value: "5432"
+                #    - name: READARR__SERVER__URLBASE
+                #      value: "media.picklemustard.dev/docs/book"
+      restartPolicy: Always
+      volumes:
+        - name: media-data
+          persistentVolumeClaim:
+            claimName: media-data
+        - name: config-data
+          persistentVolumeClaim:
+            claimName: config-data

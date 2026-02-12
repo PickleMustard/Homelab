@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: taiga
+  namespace: collab
+  labels:
+    app.kubernetes.io/instance: taiga
+    app.kubernetes.io/name: taiga
+spec:
+  ports:
+    - name: "8000"
+      port: 8000
+      targetPort: 8000
+    - name: "80"
+      port: 80
+      targetPort: 80
+  selector:
+    app.kubernetes.io/instance: taiga
+    app.kubernetes.io/name: taiga

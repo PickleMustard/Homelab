@@ -1,0 +1,15 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: forgejo-ingressroute
+  namespace: git 
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`git.picklemustard.dev`)
+      kind: Rule
+      priority: 1
+      services:
+        - name: forgejo-http
+          port: 3000

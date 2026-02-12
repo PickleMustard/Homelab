@@ -1,0 +1,174 @@
+# Forgejo Helm Chart Values for k3s Homelab
+
+# Image configuration
+image:
+  registry: code.forgejo.org
+  repository: forgejo/forgejo
+  tag: "14.0.1"
+  rootless: false
+  pullPolicy: IfNotPresent
+
+# Replicas - must be 1 for single-pod deployment
+replicaCount: 1
+
+# Strategy - must be Recreate, NOT RollingUpdate
+strategy:
+  type: Recreate
+
+# Ingress configuration
+ingress:
+  enabled: false
+
+
+
+# Services
+service:
+  http:
+    type: ClusterIP
+    port: 3000
+  ssh:
+    type: ClusterIP
+    port: 22
+
+# Persistence - use existing SMB share
+persistence:
+  enabled: true
+  create: false
+  claimName: forgejo-data
+
+# Additional config from secrets (passwords and sensitive data)
+gitea:
+  additionalConfigFromEnvs:
+    - name: FORGEJO__DATABASE__PASSWD
+      valueFrom:
+        secretKeyRef:
+          name: forgejo-postgres-secrets
+          key: password
+
+  config:
+    APP_NAME: "Forgejo"
+
+    storage:
+      STORAGE_TYPE: minio
+      MINIO_ENDPOINT: store.picklemustard.dev
+      MINIO_LOCATION: us-east-1
+      MINIO_CHECKSUM_ALGORITHM: default
+      MINIO_ACCESS_KEY_ID: forgejo-access
+      MINIO_SECRET_ACCESS_KEY: HnVvh5Vasr09VdDGAhcJFc1JxJhTm3
+      MINIO_BUCKET: forgejo-repositories
+      MINIO_USE_SSL: true
+      SERVE_DIRECT: false
+      MINIO_BUCKET_LOOKUP: auto
+
+    database:
+      DB_TYPE: "postgres"
+      HOST: "postgres-postgresql.postgres.svc.cluster.local"
+      NAME: "forgejo"
+      USER: "postgres_fid"
+      SCHEMA: "public"
+      
+
+    # Redis for cache and sessions
+    #cache:
+    #  ADAPTER: redis
+    #  HOST: redis://redis-master.redis.svc.cluster.local:6379/0
+
+    #session:
+    #  PROVIDER: redis
+    #  PROVIDER_CONFIG: redis://redis-master.redis.svc.cluster.local:6379/1
+
+    #queue:
+    #  TYPE: redis
+    #  CONN_STR: redis://redis-master.redis.svc.cluster.local:6379/2
+
+    # Server configuration
+    server:
+      DOMAIN: git.picklemustard.dev
+      ROOT_URL: http://git.picklemustard.dev
+      SSH_DOMAIN: git.picklemustard.dev
+      SSH_PORT: 22
+      SSH_LISTEN_PORT: 22
+      OFFLINE_MODE: false
+      LFS_START_SERVER: true
+      LFS_CONTENT_PATH: /data/git/lfs
+      ENABLE_PPROF: false
+
+    # Enable all features
+    actions:
+      ENABLED: true
+
+    packages:
+      ENABLED: true
+
+    # Repository settings
+    repository:
+      ENABLE_PUSH_CREATE_USER: true
+      ENABLE_PUSH_CREATE_ORG: true
+      DEFAULT_REPO_UNITS: "repo.code,repo.releases,repo.issues,repo.pulls,repo.wiki,repo.projects,repo.packages,repo.actions"
+
+    # Other settings
+    service:
+      DISABLE_REGISTRATION: true
+      REQUIRE_SIGNIN_VIEW: true
+
+    # OAuth2 integration
+    oauth2:
+      ENABLE_AUTO_SUGGEST: true
+
+
+
+  # LDAP authentication with two groups
+  ldap:
+    - name: Git Users
+      securityProtocol: unencrypted
+      host: lldap-service.auth.svc.cluster.local
+      port: "3890"
+      userSearchBase: ou=people,dc=andromeda,dc=picklemustard,dc=dev
+      userFilter: (&(objectClass=person)(uid=%s)(memberOf=cn=git-users,ou=groups,dc=andromeda,dc=picklemustard,dc=dev))
+      adminFilter: (memberOf=cn=git-admin,ou=groups,dc=andromeda,dc=picklemustard,dc=dev)
+      emailAttribute: mail
+      usernameAttribute: uid
+      existingSecret: forgejo-secrets
+
+  # Metrics
+  metrics:
+    enabled: true
+
+# Resource limits
+resources:
+  limits:
+    cpu: "2"
+    memory: "4Gi"
+  requests:
+    cpu: "500m"
+    memory: "1Gi"
+
+# Security context
+securityContext: {}
+podSecurityContext:
+  fsGroup: 1000
+
+# Liveness and readiness probes
+livenessProbe:
+  enabled: true
+  failureThreshold: 10
+  initialDelaySeconds: 200
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 1
+
+readinessProbe:
+  enabled: true
+  failureThreshold: 10
+  initialDelaySeconds: 200
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 1
+
+startupProbe:
+  enabled: true
+  failureThreshold: 30
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 1

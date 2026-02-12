@@ -1,0 +1,16 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: taiga-smb
+  namespace: collab
+provisioner: smb.csi.k8s.io
+parameters:
+  source: "//192.168.200.205/documents"
+  csi.storage.k8s.io/provisioner-secret-name: taiga-smb-creds
+  csi.storage.k8s.io/provisioner-secret-namespace: collab
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777

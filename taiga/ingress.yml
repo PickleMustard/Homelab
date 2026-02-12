@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: taiga
+  namespace: collab
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: andromeda.picklemustard.dev
+      http:
+        paths:
+          - path: /collab/taiga
+            pathType: Prefix
+            backend:
+              service:
+                name: taiga
+                port:
+                  number: 80
+                    #- path: /collab/taiga/api
+                    #  pathType: Prefix
+                    #  backend:
+                    #    service:
+                    #      name: taiga
+                    #      port:
+                    #        number: 8000

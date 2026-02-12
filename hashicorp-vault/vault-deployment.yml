@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: vault
+    app.kubernetes.io/name: vault
+  name: vault
+  namespace: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: vault
+      app.kubernetes.io/name: vault
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: vault
+        app.kubernetes.io/name: vault
+    spec:
+      containers:
+        - name: vault
+          image: hashicorp/vault:1.17.2
+          command:
+            - vault
+            - server
+            - -config=/etc/vault/vault.hcl
+          ports:
+            - containerPort: 8200
+              name: http
+              protocol: TCP
+            - containerPort: 8201
+              name: cluster
+              protocol: TCP
+          env:
+            - name: VAULT_POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  name: vault-credentials
+                  key: postgres-url
+            - name: VAULT_ADDR
+              value: "http://127.0.0.1:8200"
+            - name: SKIP_SETCAP
+              value: "true"
+          volumeMounts:
+            - mountPath: /vault/data
+              name: vault-data
+            - mountPath: /etc/vault
+              name: vault-config
+              readOnly: true
+          readinessProbe:
+            tcpSocket:
+              port: 8200
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+      restartPolicy: Always
+      volumes:
+        - name: vault-data
+          persistentVolumeClaim:
+            claimName: vault-data
+        - configMap:
+            name: vault-config
+          name: vault-config

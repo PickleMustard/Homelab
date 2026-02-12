@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taiga-back-config
+  namespace: collab
+data:
+  config.append.py: |
+    INSTALLED_APPS += ["taiga_contrib_ldap_auth_ext"]
+
+    LDAP_SERVER = "lldap-service.auth.svc.cluster.local"
+    LDAP_PORT = 3890
+    LDAP_BIND_DN = "uid=bind_reader,ou=people,dc=andromeda,dc=picklemustard,dc=dev"
+    LDAP_SEARCH_BASE = "ou=people,dc=andromeda,dc=picklemustard,dc=dev"
+    LDAP_USERNAME_ATTRIBUTE = "uid"
+    LDAP_EMAIL_ATTRIBUTE = "mail"
+    LDAP_FULL_NAME_ATTRIBUTE = "cn"
+    LDAP_SAVE_LOGIN_PASSWORD = False
+    LDAP_MAP_USERNAME_TO_UID = None
+    LDAP_START_TLS = False
+    LDAP_FALLBACK = ""

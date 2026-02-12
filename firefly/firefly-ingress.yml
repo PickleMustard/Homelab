@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: firefly-ingress
+  namespace: finance
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: 'kube-system-strip-path-prefix@kubernetescrd,kube-system-firefly-x-forwarded-prefix@kubernetescrd'
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: andromeda.picklemustard.dev
+      http:
+        paths:
+          - path: /api/firefly
+            pathType: Prefix
+            backend:
+              service:
+                name: firefly-finance
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: firefly-importer-ingress
+  namespace: finance
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: 'kube-system-strip-path-prefix@kubernetescrd,kube-system-firefly-importer-x-forwarded-prefix@kubernetescrd'
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: andromeda.picklemustard.dev
+      http:
+        paths:
+          - path: /api/firefly-importer
+            pathType: Prefix
+            backend:
+              service:
+                name: firefly-importer
+                port:
+                  number: 80

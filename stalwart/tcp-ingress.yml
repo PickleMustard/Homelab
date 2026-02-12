@@ -37,7 +37,7 @@ spec:
   - match: "HostSNI(`*`)"
     services:
       - name: stalwart
-        port: 587
+        port: 10587
   tls:
     passthrough: true
     secretName: picklemustard-dev-tls-stalwart
@@ -60,7 +60,7 @@ spec:
   - match: "HostSNI(`*`)"
     services:
       - name: stalwart
-        port: 465
+        port: 10465
         nativeLB: true
   tls:
     passthrough: true

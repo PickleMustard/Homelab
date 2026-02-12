@@ -1,0 +1,155 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: vault-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: vault
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /vault
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: vaultwarden-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: vaultwarden
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /vaultwarden
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: jellyfin-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: jellyfin
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /stream
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: sonarr-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: sonarr
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /docs/tv
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: radarr-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: radarr
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /docs/movie
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: readarr-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: readarr
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /docs/book
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: bazarr-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: bazarr
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /docs/subs
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: prowlarr-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: prowlarr
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /docs/torrent
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: firefly-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: firefly
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /api/firefly
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: firefly-importer-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: firefly-importer
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /api/firefly-importer
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: rancher-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: rancher
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /api/rancher
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: traefik-dashboard-x-forwarded-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: traefik-dashboard
+    app.kubernetes.io/name: x-forwarded-prefix
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Prefix: /api/traefik

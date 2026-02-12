@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taiga-back-configpy 
+  namespace: collab 
+data:
+  config.py: |
+    import os
+
+    from .common import *
+
+    DEBUG = True
+
+    ADMINS = (
+      ("endmin", "endmin@picklemustard.dev"),
+    )
+
+    DATABASES = {
+      'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'taiga',
+        'USER': 'postgres_fid',
+        'PASSWORD': 'IKj#0y1mZb#zdDS#TrLP',
+        'HOST': 'postgres-postgresql.postgres.svc.cluster.local',
+        'PORT': '5432',
+      }
+    }
+
+    INSTALLED_APPS += ["taiga_contrib_ldap_auth_enhanced"]
+
+    TAIGA_SITES_SCHEME = "https"
+    TAIGA_SITES_DOMAIN = "andromeda.picklemustard.dev"
+    FORCE_SCRIPT_NAME = "/collab/taiga/"
+    TAIGA_URL = f"{ TAIGA_SITES_SCHEME }://{ TAIGA_SITES_DOMAIN }{ FORCE_SCRIPT_NAME }"
+    SITES = {
+        "api": { "name": "api", "scheme": {TAIGA_SITES_SCHEME}, "domain": {TAIGA_SITES_DOMAIN} },
+        "front": { "name": "front", "scheme": {TAIGA_SITES_SCHEME}, "domain": f"{ TAIGA_SITES_DOMAIN }{ FORCE_SCRIPT_NAME }" }
+    }
+
+    MEDIA_URL = f"{ TAIGA_URL }media/"
+    DEFAULT_FILE_STORAGE = "taiga_contrib_protected.storage.ProtectedFileSystemStorage"
+    THUMBNAIL_DEFAULT_STORAGE = DEFAULT_FILE_STORAGE
+    STATIC_URL = f"{ TAIGA_URL }static/"
+
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    CHANGE_NOTIFICATIONS_MIN_INTERVAL = 120  # seconds
+    
+    DEFAULT_FROM_EMAIL = 'postmaster@picklemustard.dev'
+    EMAIL_USE_TLS = False
+    EMAIL_USE_SSL = True 
+    EMAIL_HOST = 'mail.picklemustard.dev'
+    EMAIL_PORT = 465
+    EMAIL_HOST_USER = 'postmaster'
+    EMAIL_HOST_PASSWORD = '1b44AbLTtQiF#g'
+
+    ENABLE_TELEMETRY = True
+
+    FRONT_SITEMAP_ENABLED = True
+
+    LDAP_SERVER = "ldap://lldap.picklemustard.dev"
+    LDAP_PORT = 389
+    LDAP_BIND_DN = "uid=<username>,ou=people,dc=andromeda,dc=picklemustard,dc=dev"
+    LDAP_BIND_WITH_USER_PROVIDED_CREDENTIALS = True
+    LDAP_SEARCH_BASE = "ou=people,dc=andromeda,dc=picklemustard,dc=dev"
+    LDAP_USERNAME_ATTRIBUTE = "uid"
+    LDAP_EMAIL_ATTRIBUTE = "mail"
+    LDAP_FULL_NAME_ATTRIBUTE = "displayname"
+    LDAP_SAVE_LOGIN_PASSWORD = False
+    LDAP_MAP_USERNAME_TO_UID = None
+
+

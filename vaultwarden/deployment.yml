@@ -42,10 +42,12 @@ spec:
           imagePullPolicy: IfNotPresent
           name: vaultwarden
           env:
+            - name: LOG_LEVEL
+              value: "trace"
             - name: DATABASE_URL
-              value: "postgresql://postgres_fid:n&frpqaTRnN95?pr@postgres-postgresql.postgres.svc.cluster.local:5432/vaultwarden"
+              value: "postgresql://postgres_fid:IKj#0y1mZb#zdDS#TrLP@postgres-postgresql.postgres.svc.cluster.local:5432/vaultwarden"
             - name: DOMAIN
-              value: "https://vault.picklemustard.dev"
+              value: "https://auth.picklemustard.dev/pass/"
             - name: PUSH_ENABLED
               value: "true"
             - name: PUSH_INSTALLATION_ID
@@ -53,15 +55,15 @@ spec:
             - name: PUSH_INSTALLATION_KEY
               value: "93pqeVmqADJMUNOxk8ki"
             - name: PUSH_RELAY_URI
-              value: "https://vault.picklemustard.dev/notifications"
+              value: "https://auth.picklemustard.dev/pass/notifications"
             - name: PUSH_IDENTITY_URI
-              value: "https://vault.picklemustard.dev/identity"
+              value: "https://auth.picklemustard.dev/pass/identity"
             - name: ROCKET_PORT
               value: "80"
             - name: SENDS_ALLOWED
               value: "true"
             - name: ADMIN_TOKEN
-              value: "$argon2id$v=19$m=65540,t=3,p=4$xtZzcy0HbferRJ6v4sPOKXXqpenNU0fb+reWLT02QvA$J1FIUiNggZH8GlzMfqTCYxNmKA5SNCQDNOY/xXxazZg"
+              value: "$argon2id$v=19$m=65540,t=3,p=4$ZzhpRjNNRFFXZFFHbDhJdmk2TnJDaWIwMVR6eHR6TWR0cmFtL29ORS85OD0$bJAJL8Thhgs7wH6Oq82i/j8WK/nZgK04YbPsZDPTBRE"
             - name: SMTP_HOST
               value: "picklemustard.dev"
             - name: SMTP_FROM
@@ -69,15 +71,15 @@ spec:
             - name: SMTP_FROM_NAME
               value: "Vaultwarden"
             - name: SMTP_USERNAME
-              value: "vaultwarden"
+              value: "vaultwarden_fid"
             - name: SMTP_PASSWORD
-              value: "z$A4cb?x3ng9a?&h"
+              value: "duG!uqmM@Ehww$yswY9^"
             - name: SMTP_SECURITY
-              value: "starttls"
+              value: "force_tls"
             - name: SMTP_PORT
-              value: "587"
+              value: "465"
             - name: SMTP_AUTH_MECHANISM
-              value: "LOGIN"
+              value: "plain"
           ports:
             - containerPort: 80
               name: http

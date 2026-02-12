@@ -2,6 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "80"
+    prometheus.io/path: "/metrics"
   creationTimestamp: '2025-05-14T00:08:55Z'
   labels:
     app.kubernetes.io/instance: stalwart
@@ -48,11 +51,11 @@ spec:
       protocol: TCP
       targetPort: 25
     - name: submission
-      port: 587
+      port: 10587
       protocol: TCP
       targetPort: 587
     - name: submissions
-      port: 465
+      port: 10465
       protocol: TCP
       targetPort: 465
   selector:
@@ -60,3 +63,31 @@ spec:
     app.kubernetes.io/name: stalwart
   sessionAffinity: None
   type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stalwart-headless
+  namespace: stalwart 
+  labels:
+    app.kubernetes.io/instance: stalwart
+    app.kubernetes.io/name: stalwart 
+spec:
+  clusterIP: None # This is what makes the service "Headless"
+  selector:
+    app.kubernetes.io/name: stalwart 
+    app.kubernetes.io/instance: stalwart 
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+    - name: smtp
+      port: 25
+      protocol: TCP
+      targetPort: 25
+    - name: submission
+      port: 587
+      targetPort: 587
+      protocol: TCP

@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bazarr-ingress
+  namespace: media
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: 'kube-system-strip-path-prefix@kubernetescrd,kube-system-bazarr-x-forwarded-prefix@kubernetescrd'
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: media.picklemustard.dev
+      http:
+        paths:
+          - path: /docs/subs
+            pathType: Prefix
+            backend:
+              service:
+                name: bazarr-service
+                port:
+                  number: 6767

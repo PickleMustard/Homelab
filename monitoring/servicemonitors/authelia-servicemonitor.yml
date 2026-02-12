@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: authelia
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: authelia
+  namespaceSelector:
+    matchNames:
+      - auth
+  endpoints:
+    - port: http
+      interval: 30s
+      path: /metrics

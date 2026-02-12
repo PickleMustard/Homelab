@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: redis-exporter
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis-exporter
+  namespaceSelector:
+    matchNames:
+      - redis
+  endpoints:
+    - port: http
+      interval: 30s
+      path: /metrics

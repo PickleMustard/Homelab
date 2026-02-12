@@ -5,7 +5,7 @@ metadata:
   namespace: media
 provisioner: smb.csi.k8s.io
 parameters:
-  source: //192.168.1.77/Visual_Media
+  source: //192.168.200.205/Visual_Media
   csi.storage.k8s.io/provisioner-secret-name: media-data-creds
   csi.storage.k8s.io/provisioner-secret-namespace: media
 reclaimPolicy: Retain

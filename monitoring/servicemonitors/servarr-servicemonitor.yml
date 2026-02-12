@@ -1,0 +1,27 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: servarr
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: servarr
+  namespaceSelector:
+    matchNames:
+      - media
+  endpoints:
+    - port: sonarr
+      interval: 30s
+      path: /metrics
+    - port: radarr
+      interval: 30s
+      path: /metrics
+    - port: prowlarr
+      interval: 30s
+      path: /metrics
+    - port: bazarr
+      interval: 30s
+      path: /metrics

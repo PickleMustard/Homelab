@@ -1,0 +1,66 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: taiga-init
+  namespace: collab
+spec:
+  template:
+    spec:
+      containers:
+        - name: taiga-init
+          image: taigaio/taiga-back:latest
+          command: ["sh", "-c"]
+          args:
+            - |
+              DJANGO_SETTINGS_MODULE=settings.config python manage.py migrate --noinput
+              DJANGO_SETTINGS_MODULE=settings.config python manage.py loaddata initial_project_templates
+              DJANGO_SETTINGS_MODULE=settings.config python manage.py compilemessages
+              DJANGO_SETTINGS_MODULE=settings.config python manage.py collectstatic --noinput
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: taiga-config
+                  key: SECRET_KEY
+            - name: DATABASES
+              value: '{"default":{"ENGINE":"django.db.backends.postgresql","HOST":"postgres-postgresql.postgres.svc.cluster.local","NAME":"taiga","USER":"postgres_fid","PASSWORD":"IKj#0y1mZb#zdDS#TrLP","PORT":5432,"CONN_MAX_AGE":600}}'
+            - name: CELERY_ENABLED
+              value: "false"
+            - name: TAIGA_SITES_SCHEME
+              value: "https"
+            - name: TAIGA_SITES_DOMAIN
+              value: "andromeda.picklemustard.dev"
+            - name: FORCE_SCRIPT_NAME
+              value: "/collab/taiga"
+          volumeMounts:
+            - name: plugins
+              mountPath: /taiga-back/taiga_contrib_ldap_auth_ext
+              subPath: taiga_contrib_ldap_auth_ext
+            - name: config
+              mountPath: /taiga-back/settings/config.append.py
+              subPath: config.append.py
+            - name: media
+              mountPath: /taiga-back/media
+      initContainers:
+        - name: install-ldap-plugin
+          image: taigaio/taiga-back:latest
+          command: ["sh", "-c"]
+          args:
+            - |
+              pip install taiga-contrib-ldap-auth-ext==0.5.0
+              mkdir -p /taiga-plugins
+              cp -r /usr/local/lib/python*/site-packages/taiga_contrib_ldap_auth_ext /taiga-plugins/
+          volumeMounts:
+            - name: plugins
+              mountPath: /taiga-plugins
+      volumes:
+        - name: plugins
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: taiga-back-config
+        - name: media
+          persistentVolumeClaim:
+            claimName: taiga-data
+      restartPolicy: Never
+  backoffLimit: 3
