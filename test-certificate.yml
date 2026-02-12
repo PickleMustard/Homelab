@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: picklemustard-dev
+  namespace: default
+spec:
+  secretName: picklemustard-dev-tls
+  dnsNames:
+    - "andromeda.picklemustard.dev"
+    - "*.andromeda.picklemustard.dev"
+  issuerRef:
+    name: cloudflare-issuer
+    kind: ClusterIssuer

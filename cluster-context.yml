@@ -1,0 +1,19 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: DATA+OMITTED
+    server: https://192.168.1.210:6443
+  name: auth-context
+contexts:
+- context:
+    cluster: auth-context
+    user: auth-context
+  name: auth-context
+current-context: auth-context
+kind: Config
+preferences: {}
+users:
+- name: auth-context
+  user:
+    client-certificate-data: DATA+OMITTED
+    client-key-data: DATA+OMITTED

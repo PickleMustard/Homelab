@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: agones-cert
+  namespace: agones-system
+spec:
+  secretName: agones-cert
+  commonName: "*.picklemustard.dev"
+  dnsNames:
+    - "picklemustard.dev"
+    - "*.picklemustard.dev"
+  issuerRef:
+    name: cloudflare-issuer
+    kind: ClusterIssuer

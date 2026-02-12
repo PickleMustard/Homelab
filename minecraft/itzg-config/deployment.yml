@@ -1,0 +1,169 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft-server
+  namespace: minecraft
+  labels:
+    app.kubernetes.io/instance: mc-server-neoforge
+    app.kubernetes.io/name: modded-server-neoforge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: mc-server-neoforge
+      app.kubernetes.io/name: modded-server-neoforge
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: mc-server-neoforge
+        app.kubernetes.io/name: modded-server-neoforge
+    spec:
+      volumes:
+      - name: backup-path
+        hostPath:
+          type: "Directory"
+          path: "/srv/media/backups"
+      - name: server-jar
+        hostPath:
+          type: "File"
+          path: "/srv/media/all-of-create/forge-1.20.1-47.3.10-installer.jar"
+      - name: datapacks
+        hostPath:
+          type: "Directory"
+          path: "/srv/media/datapacks"
+      - name: kubejs
+        hostPath: 
+          type: "Directory"
+          path: "/srv/media/manufactured-progression/kubejs"
+      - name: scripts
+        hostPath:
+          type: "Directory"
+          path: "/srv/media/manufactured-progression/scripts"
+      - name: minecraft-data
+        persistentVolumeClaim:
+          claimName: minecraft-data-pvc
+      - name: server-properties
+        configMap:
+          defaultMode: 0644
+          name: server-properties
+      - name: mods
+        hostPath:
+          type: "Directory"
+          path: "/srv/media/manufactured-progression/mods"
+      - name: defaultconfigs
+        hostPath:
+          type: "Directory"
+          path: "/srv/media/manufactured-progression/defaultconfigs"
+      - name: mod-config
+        hostPath:
+          type: "Directory"
+          path: "/srv/media/manufactured-progression/config"
+      - name: whitelist
+        hostPath:
+          type: "File"
+          path: "/srv/media/minecraft-common/whitelist.json"
+      - name: op-list
+        hostPath:
+          type: "File"
+          path: "/srv/media/minecraft-common/ops.json"
+            #- name: server-setup-config
+            #  hostPath:
+            #    type: "File"
+            #    path: "/srv/media/all-of-create/server-setup-config.yaml"
+      containers:
+      - name: minecraft-server
+        image: itzg/minecraft-server:latest
+        env:
+          - name: UID
+            value: '1000'
+          - name: EULA
+            value: 'true'
+          - name: TYPE
+            value: 'FORGE'
+          - name: VERSION
+            value: '1.20.1'
+          - name: FORGE_VERSION
+            value: '47.4.0'
+          - name: MAX_MEMORY
+            value: '6G'
+          - name: CREATE_CONSOLE_IN_PIPE
+            value: "true"
+          - name: OVERRIDE_SERVER_PROPERTIES 
+            value: 'false'
+          - name: OPS_FILE
+            value: '/data/ops.json'
+          - name: SYNC_SKIP_NEWER_IN_DESTINATION
+            value: 'true'
+          - name: ENABLE_AUTOPAUSE
+            value: 'true'
+              #- name: DATAPACKS
+              #  value: "/data/datapacks/afk-display.zip,/data/datapacks/anti-enderman-grief.zip,/data/datapacks/cauldron-concrete.zip,/data/datapacks/double-shulker-shells.zip,/data/datapacks/durability-ping.zip,/data/datapacks/multiplayer-sleep.zip,/data/datapacks/track-raw-statistics.zip,/data/datapacks/track-statistics.zip"
+        ports:
+        - containerPort: 25565
+        volumeMounts:
+          - name: minecraft-data
+            mountPath: /data
+          - name: server-properties
+            mountPath: /data/server.properties
+            subPath: server.properties
+          - name: datapacks
+            mountPath: /data/datapacks/
+          - name: mods
+            mountPath: /data/mods
+          - name: scripts
+            mountPath: /data/scripts
+          - name: kubejs
+            mountPath: /data/kubejs
+          - name: defaultconfigs
+            mountPath: /data/defaultconfigs
+          - name: mod-config
+            mountPath: /data/config
+          - name: server-jar
+            mountPath: /data/server.jar
+          - name: whitelist
+            mountPath: /data/whitelist.json
+          - name: op-list
+            mountPath: /data/ops.json
+              #- name: server-setup-config
+              #  mountPath: /data/server-setup-config.yaml
+              #readinessProbe:
+              #  exec:
+              #    command:
+              #    - mc-monitor
+              #    - status
+              #  initialDelaySeconds: 500          
+              #  periodSeconds: 30
+              #livenessProbe:
+              #  exec:
+              #    command:
+              #    - mcstatus
+              #    - status
+              #  initialDelaySeconds: 500
+              #  periodSeconds: 30
+      - name: world-backup
+        image: itzg/mc-backup
+        env:
+          - name: 'SRC_DIR'
+            value: '/data'
+          - name: 'BACKUP_NAME'
+            value: 'all-of-create-backup'
+          - name: 'BACKUP_METHOD'
+            value: 'tar'
+          - name: 'PAUSE_IF_NO_PLAYERS'
+            value: 'true'
+          - name: 'PLAYERS_ONLINE_CHECK_INTERVAL'
+            value: '1h'
+          - name: 'BACKUP_INTERVAL'
+            value: '24h'
+          - name: 'RCON_HOST'
+            value: 'neoforge-server-service.minecraft.svc.cluster.local'
+          - name: 'RCON_PASSWORD'
+            value: 'minecraft'
+          - name: 'INITIAL_DELAY'
+            value: '2m'
+        volumeMounts:
+          - name: minecraft-data
+            mountPath: /data
+          - name: backup-path
+            mountPath: /backups
+

@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lldap
+  namespace: auth
+spec:
+  selector:
+    matchLabels:
+      app: lldap
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: lldap
+    spec:
+      containers:
+      - name: lldap
+        image: nitnelave/lldap:stable
+        ports:
+        - containerPort: 3890
+          name: ldap
+        - containerPort: 17170
+          name: http
+        env:
+        - name: LLDAP_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: lldap-secrets
+              key: jwt-secret
+        - name: LLDAP_LDAP_USER_PASS
+          valueFrom:
+            secretKeyRef:
+              name: lldap-secrets
+              key: ldap-user-pass
+        - name: LLDAP_LDAP_BASE_DN
+          value: "dc=andromeda,dc=picklemustard,dc=dev"
+        - name: LLDAP_DATABASE_URL
+          value: "sqlite:///data/users.db?mode=rwc"
+        volumeMounts:
+        - name: lldap-data
+          mountPath: /data
+      volumes:
+      - name: lldap-data
+        persistentVolumeClaim:
+          claimName: lldap-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lldap-service
+  namespace: auth
+spec:
+  selector:
+    app: lldap
+  ports:
+  - name: ldap
+    port: 3890
+    targetPort: 3890
+  - name: http
+    port: 17170
+    targetPort: 17170
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lldap-ingress
+  namespace: auth
+  annotations:
+    spec.ingressClassName: "traefik"
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    traefik.ingress.kubernetes.io/router.entrypoints: "web"
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  rules:
+  - host: lldap.andromeda.picklemustard.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: lldap-service
+            port:
+              number: 17170
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lldap-data-pvc
+  namespace: auth
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

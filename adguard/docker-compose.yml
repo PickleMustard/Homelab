@@ -1,0 +1,25 @@
+version: '3'
+
+networks:
+  macvlan_network:
+    external:
+      name: static_address_network
+  bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "180.20.0.0/24"
+
+services:
+  adguard:
+    container_name: adguard
+    image: adguard/adguardhome
+    restart: unless-stopped
+    networks:
+      macvlan_network:
+          ipv4_address: 192.168.200.253
+      bridge:
+          ipv4_address: 180.20.0.10
+    volumes:
+      - /opt/adguard/work:/opt/adguardhome/work
+      - /opt/adguard/conf:/opt/adguardhome/conf

@@ -1,0 +1,66 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pterodactyl-app-claim
+  namespace: pterodactyl
+  labels:
+    app.kubernetes.io/instance: pterodactyl-panel
+    app.kubernetes.io/name: pterodactyl-panel
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pterodactyl-nginx-claim
+  namespace: pterodactyl
+  labels:
+    app.kubernetes.io/instance: pterodactyl-panel
+    app.kubernetes.io/name: pterodactyl-panel
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pterodactyl-le-claim
+  namespace: pterodactyl
+  labels:
+    app.kubernetes.io/instance: pterodactyl-panel
+    app.kubernetes.io/name: pterodactyl-panel
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pterodactyl-logs-claim
+  namespace: pterodactyl
+  labels:
+    app.kubernetes.io/instance: pterodactyl-panel
+    app.kubernetes.io/name: pterodactyl-panel
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

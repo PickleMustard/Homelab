@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden-ldap
+  namespace: vaultwarden
+  labels:
+    app.kubernetes.io/name: vaultwarden-ldap
+    app.kubernetes.io/instance: vaultwarden-ldap
+    app.kubernetes.io/version: latest
+
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: vaultwarden-ldap
+      app.kubernetes.io/name: vaultwarden-ldap
+  replicas: 1
+  strategy: 
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: vaultwarden-ldap
+        app.kubernetes.io/name: vaultwarden-ldap
+        app.kubernetes.io/version: latest
+    spec:
+      containers:
+      - name: vaultwarden-ldap
+        image: vividboarder/vaultwarden_ldap
+        ports:
+          - containerPort: 80
+        env:
+        - name: CONFIG_PATH
+          value: "/opt/vaultwarden-ldap/config.toml"
+        - name: APP_VAULTWARDEN_ADMIN_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: admin_token
+              name: vaultwarden-ldap-config
+        - name: APP_LDAP_BIND_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: bind_passwd
+              name: vaultwarden-ldap-config
+        volumeMounts:
+        - mountPath: /opt/vaultwarden-ldap/config.toml
+          name: config
+          readOnly: false
+          subPath: config.toml
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: "vaultwarden-ldap"
+        name: config
+
+
+

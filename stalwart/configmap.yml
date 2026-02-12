@@ -1,0 +1,149 @@
+apiVersion: v1
+data:
+  config.toml: |
+    [auth]
+      [auth.dkim]
+        verify = "relaxed"
+
+
+    [authentication]
+      [authentication.fallback-admin]
+        secret = "%{env:FALLBACK_ADMIN_SECRET}%"
+        user = "mail-server-admin"
+        
+    [config]
+      local-keys = [ "store.*", "directory.*", "tracer.*", "server.*", "!server.blocked-ip.*",
+               "authentication.fallback-admin.*", "cluster.node-id", "storage.data", 
+               "storage.blob", "storage.lookup",  "storage.fts", "storage.directory", 
+               "server.hostname", "server.blocked-ip", "server.allowed-ip", "certificate.*"]
+        
+    [directory]
+      [directory."ldap"]
+        type = "ldap"
+        url = "ldap://192.168.1.142:3890"
+        base-dn = "dc=andromeda,dc=picklemustard,dc=dev"
+        timeout = "30s"
+      [directory."ldap".bind]
+        dn = "uid=bind_reader,ou=people,dc=andromeda,dc=picklemustard,dc=dev"
+        secret = "purple14735#"
+      [directory."ldap".bind.auth]
+        enable = true
+        dn = "uid=?,ou=people,dc=andromeda,dc=picklemustard,dc=dev"
+        search = false
+      [directory."ldap".filter]
+        name = "(&(|(objectClass=person)(objectClass=posixGroup))(uid=?))"
+        email = "(&(|(objectClass=person)(objectClass=posixGroup))(|(mail=?)(mailAlias=?)))"
+      [directory."ldap".attributes]
+        name = "uid"
+        class = "objectClass"
+        description = ["firstName", "lastName"]
+        secret = "userPassword"
+        groups = ["memberOf", "otherGroups"]
+        email = "mail"
+        email-alias = "mailAlias"
+        quota = "diskQuota"
+
+    [metrics]
+      [metrics.prometheus]
+        enable = true
+        [metrics.prometheus.auth]
+          secret = "%{env:METRICS_SECRET}%"
+          username = "%{env:METRICS_USERNAME}%"
+
+    [certificate."default"]
+    cert = "%{file:/opt/stalwart/etc/private/tls.cert}%"
+    private-key = "%{file:/opt/stalwart/etc/private/tls.key}%"
+    default = true
+    [server]
+      hostname = "picklemustard.dev"
+      blocked-ip = ""
+      [server.allowed-ip]
+        "10.0.0.0/8" = ""
+      [server.tls]
+      enable = true
+      implicit = false
+      [server.http]
+        url = "protocol + '://' + config_get('server.hostname')"
+        use-x-forwarded = true
+      [server.listener]
+        [server.listener.http]
+          bind = ["[::]:80"]
+          protocol = "http"
+        [server.listener.https]
+          bind = ["[::]:443"]
+          protocol = "http"
+          [server.listener.https.tls]
+            implicit = true
+        [server.listener.imap]
+          bind = ["[::]:143"]
+          protocol = "imap"
+        [server.listener.imaptls]
+          bind = ["[::]:993"]
+          protocol = "imap"
+          [server.listener.imaptls.tls]
+            implicit = true
+        [server.listener.pop3]
+          bind = ["[::]:110"]
+          protocol = "pop3"
+        [server.listener.pop3s]
+          bind = ["[::]:995"]
+          protocol = "pop3"
+          [server.listener.pop3s.tls]
+            implicit = true
+        [server.listener.sieve]
+          bind = ["[::]:4190"]
+          protocol = "managesieve"
+        [server.listener.smtp]
+          bind = ["[::]:25"]
+          protocol = "smtp"
+        [server.listener.submission]
+          bind = ["[::]:587"]
+          protocol = "smtp"
+        [server.listener.submissions]
+          bind = ["[::]:465"]
+          protocol = "smtp"
+          [server.listener.submissions.tls]
+            implicit = true
+
+    [storage]
+      blob = "postgresql"
+      data = "postgresql"
+      directory = "ldap"
+      fts = "postgresql"
+      lookup = "postgresql"
+
+    [store]
+      [store.postgresql]
+        database = "email"
+        host = "postgres-postgresql.postgres.svc.cluster.local"
+        password = "n&frpqaTRnN95?pr"
+        port = 5432
+        timeout = "15s"
+        type = "postgresql"
+        user = "postgres_fid"
+
+    [tracer]
+      [tracer.otel]
+        enable = false
+        endpoint = "https://127.0.0.1/otel"
+        headers = []
+        level = "info"
+        transport = "grpc"
+        type = "open-telemetry"
+      [tracer.stdout]
+        ansi = false
+        enable = true
+        level = "trace"
+        type = "stdout"
+kind: ConfigMap
+metadata:
+  creationTimestamp: '2025-05-14T00:08:55Z'
+  labels:
+    app.kubernetes.io/instance: stalwart
+    app.kubernetes.io/name: stalwart
+    app.kubernetes.io/version: 0.12.1
+  name: stalwart
+  namespace: stalwart
+  resourceVersion: '9078431'
+  uid: 9ed0196f-5e30-4259-8baa-ad3ac0e5a978
+

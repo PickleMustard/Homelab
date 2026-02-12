@@ -1,0 +1,303 @@
+apiVersion: v1
+data:
+  configuration.yml: >
+    ---
+
+    theme: 'dark'
+
+
+    default_2fa_method: ''
+
+
+    certificates_directory: '/config/certificates/'
+
+
+    server:
+      address: 'tcp://:9091'
+      asset_path: ''
+      headers:
+        csp_template: ""
+      buffers:
+        read: 4096
+        write: 4096
+      timeouts:
+        read: '6 seconds'
+        write: '6 seconds'
+        idle: '30 seconds'
+      endpoints:
+        enable_pprof: false
+        enable_expvars: false
+        authz:
+          auth-request:
+            implementation: 'AuthRequest'
+            authn_strategies:
+            - name: 'HeaderAuthRequestProxyAuthorization'
+            - name: 'CookieSession'
+          ext-authz:
+            implementation: 'ExtAuthz'
+            authn_strategies:
+            - name: 'HeaderAuthorization'
+            - name: 'CookieSession'
+          forward-auth:
+            implementation: 'ForwardAuth'
+            authn_strategies:
+            - name: 'HeaderAuthRequestProxyAuthorization'
+            - name: 'CookieSession'
+          legacy:
+            implementation: 'Legacy'
+            authn_strategies:
+            - name: 'HeaderAuthorization'
+              schemes:
+              - 'Basic'
+            - name: 'CookieSession'
+    access_control:
+      default_policy: 'bypass'
+      rules:
+        - domain: 
+            - '*.picklemustard.dev'
+          policy: 'two_factor'
+            #identity_providers:
+            #  oidc:
+            #    hmac_secret: '{{ env "HMAC_SECRET" }}'
+            #    jwks:
+            #      - key_id: 'authelia-key'
+            #        algorithm: 'RS256'
+            #        use: 'sig'
+            #        key: |
+            #          -----BEGIN PRIVATE KEY-----
+            #          MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCboPmDXZta1u3W
+            #          jQ3lDu+stNVrYfPyKhcJQXB5zTInQneYCOVkV1XxAyNcA56eHB/vKlGQT9DXiqj+
+            #          DKb6ssolBkyd5JtqlIRL3p1zvQf3hXolgDLgu2e/ew5KLXzmqVZW7iHZgdMHeLaZ
+            #          KRjVZ9gePHs2E8A+zjbsZJP3FfnVM7KWWNirk2z3po1VsmVc74JERE/u0r5Qeq1c
+            #          n/emlkkXOotcFQfl1Q0HBociLy/7r5ReIazBN5IL2qaSR4V819/9DfjE4AVSq2mz
+            #          3G05sEAu1K8vKYCgMOCDcSVSoCi9iZpfxW6cqaGKdPkFX1Pr9tTDiqCbRY/pqbif
+            #          Hms+PUM/AgMBAAECggEAKaLkDlK1VRTKdcuwC3e3BKgurvd6WfAL0LSawGN3Bwzf
+            #          zSOYJ4O8IOpbg+sN/TP+ETDruGW6NGhK9QjyhYDe1w/74IRAVj/csyWgT04j+wNR
+            #          XgYR1pEc3RwxgwPvdhCY4lH8aWIz0LxpccmOdM2/ArvgpOOc29C03gK8mW7eM70h
+            #          twReOh2EQx+zImdxdBN0KqBFP2VsaDS14azzLgmmssQLKxfvPaigXlmdGHQ42wsr
+            #          KhWKEPGIVVUr5wg+HIuNWAFKLiwIIMHnllP5FP+b3UPLny00XrOf64cV4ODVLtxE
+            #          V2yoJxz0ikRshnhm9KRjgvPj8GPS6FBMVg9BraQHPQKBgQDL6vEQCF23G8uXPMqn
+            #          ranOw8DI0r1kwEmQHS2Z+ikgaWebMMkuiEFpLswAOJ2mikJkXefLwjLL0BCDj1Fj
+            #          VDDkX9HSwtfcKkEh2LckhHxiK8TyiALvmZOdtrrdl4Kc++/CCgb/rV2CmK1qK2gL
+            #          sAnqB7HvzwvEfhjNZZmGfX4wtQKBgQDDYK99urLapnu5mRy2zrdP9+lJ5Oe37rbt
+            #          e8snhv4tFvAH5oLhmVML5XUA11egVT1aUwuOZLXl0u9mw0V8V7cJshcJzNL5P78Z
+            #          FF1WTSnAQfsDU+DoAMvItt6SbaB4A224EnMbi/Iij+l+LdccW8soddDlPTV2EByy
+            #          GhFp7TtAowKBgQCmx2wMAdusJGaaNlVFWQsWGhJ17a6LVZ2U6dhfJDQ41xyu1/Lj
+            #          RPvCrEybLbL6//+XGRq5Ewb6nRy0jSYyyCwIzLnO2B82abTFmvsHOfiFTmkRN962
+            #          2nPaPRaOoBlqjb+lgxAAU2m0o2zJ9eBuFre1GkAU89EbD0r3ys4LKl5oNQKBgG2F
+            #          CDqhalrY0igy5P6wl99y58ntT9syLEapizLoIBkkb37uP1W4/e2APXswO0V8Ir08
+            #          KhEy8SgYeuyO76eI/+imdPWgZG8lxbiISt3yuUG1esDdxwgmUhV8NP2+CCLeQSXa
+            #          6b16UEwBgfCiP5/88MAIcwXdrtc0pvFLXZGUUw+jAoGAXwVRGIihynqxO53AYBSS
+            #          A8BgLBaM8P2xnVSYDBU/FRjMlCdW6C1v6+jA+I4+EFARbhuzLI39s4i9ibUfq3Hq
+            #          k4s0gN4WHNf6mr23iLBxzlSNs8kJZemriGQggV5ZWjeqESUHqGSTlFNcmhJCPsnG
+            #          tW5EtQRMofIe54Rv6O/OFfo=
+            #          -----END PRIVATE KEY-----
+            #        certificate_chain: |
+            #          -----BEGIN CERTIFICATE-----
+            #          MIID6zCCAtOgAwIBAgIUHLXq76zz6ca6Amxc4O4kUYiIDGUwDQYJKoZIhvcNAQEL
+            #          BQAwgZ0xCzAJBgNVBAYTAlVTMQ4wDAYDVQQIDAVUZXhhczEPMA0GA1UEBwwGRGFs
+            #          bGFzMQ0wCwYDVQQKDARUZWFsMQ0wCwYDVQQLDARFeGVjMRowGAYDVQQDDBFwaWNr
+            #          bGVtdXN0YXJkLmRldjEzMDEGCSqGSIb3DQEJARYkcGlja2xlbXVzdGFyZEBtYWls
+            #          LnBpY2tsZW11c3RhcmQuZGV2MB4XDTI1MDUxMDE5MDkwNVoXDTI2MDUxMDE5MDkw
+            #          NVowgZ0xCzAJBgNVBAYTAlVTMQ4wDAYDVQQIDAVUZXhhczEPMA0GA1UEBwwGRGFs
+            #          bGFzMQ0wCwYDVQQKDARUZWFsMQ0wCwYDVQQLDARFeGVjMRowGAYDVQQDDBFwaWNr
+            #          bGVtdXN0YXJkLmRldjEzMDEGCSqGSIb3DQEJARYkcGlja2xlbXVzdGFyZEBtYWls
+            #          LnBpY2tsZW11c3RhcmQuZGV2MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+            #          AQEAm6D5g12bWtbt1o0N5Q7vrLTVa2Hz8ioXCUFwec0yJ0J3mAjlZFdV8QMjXAOe
+            #          nhwf7ypRkE/Q14qo/gym+rLKJQZMneSbapSES96dc70H94V6JYAy4Ltnv3sOSi18
+            #          5qlWVu4h2YHTB3i2mSkY1WfYHjx7NhPAPs427GST9xX51TOylljYq5Ns96aNVbJl
+            #          XO+CRERP7tK+UHqtXJ/3ppZJFzqLXBUH5dUNBwaHIi8v+6+UXiGswTeSC9qmkkeF
+            #          fNff/Q34xOAFUqtps9xtObBALtSvLymAoDDgg3ElUqAovYmaX8VunKmhinT5BV9T
+            #          6/bUw4qgm0WP6am4nx5rPj1DPwIDAQABoyEwHzAdBgNVHQ4EFgQUMrthpSalYhAB
+            #          hKYeTSyoJC9SAs4wDQYJKoZIhvcNAQELBQADggEBAHuNMW6A1Ft0jm6snYEbW3wI
+            #          ce6A7GRL5QSavgduhxuD300DJ2mF4WxtebdsLEPPBx31LEQ1EVzfRqxdlNhUbsZr
+            #          +QF9QPK3yr3x9yJ1hWEJEPDYYr6AS34jXKTfzhbjcl57ywA0Jsy+vfdoQkQo5xgX
+            #          TnN2eNf8kNbOZ3ixwisxwwIziJjwZDzTeh48oDpv0iiZBFkFBrKaitX4CYZ0uwaA
+            #          DJ0OLHjQrVUlwMOKcdMM1kXYDWcraYiisVS42SLRQbhslc4JQRiayLkqrpv1wLw8
+            #          KhhyYx161BK/otBOgzknshrUTe0DZPS0G4poEj6JXjxd9tYo60rFgcVCMcpUpmc=
+            #          -----END CERTIFICATE-----
+            #    enable_client_debug_messages: false
+            #    minimum_parameter_entropy: 8
+            #    enforce_pkce: 'public_clients_only'
+            #    enable_pkce_plain_challenge: false
+            #    enable_jwt_access_token_stateless_introspection: false
+            #    discovery_signed_response_alg: 'none'
+            #    discovery_signed_response_key_id: ''
+            #    require_pushed_authorization_requests: false
+            #    authorization_policies:
+            #      policy_name:
+            #        default_policy: 'two_factor'
+            #        rules:
+            #          - policy: 'deny'
+            #            subject: 'group:services'
+            #            networks:
+            #             - '192.168.1.0/24'
+            #    lifespans:
+            #      access_token: '1h'
+            #      authorize_code: '1m'
+            #      id_token: '1h'
+            #      refresh_token: '90m'
+            #    claims_policies:
+            #      policy_name:
+            #        id_token: []
+            #        access_token: []
+            #        id_token_audience_mode: 'specification'
+            #    scopes:
+            #      scope_name:
+            #        claims: []
+            #    cors:
+            #      endpoints:
+            #        - 'authorization'
+            #        - 'pushed-authorization-request'
+            #        - 'token'
+            #        - 'revocation'
+            #        - 'introspection'
+            #        - 'userinfo'
+            #    clients:
+            #      - client_id: 'stalwart'
+            #        client_name: 'Stalwart'
+            #        client_secret: '{{ env "STALWART_CLIENT_SECRET" }}'
+            #        public: false
+            #        authorization_policy: 'two_factor'
+            #        require_pkce: true
+            #        pkce_challenge_method: 'S256'
+            #        redirect_uris:
+            #          - 'https://mail.picklemustard.dev'
+            #        scopes:
+            #          - 'openid'
+            #          - 'profile'
+            #          - 'email'
+            #          - 'groups'
+    log:
+      level: 'trace'
+      format: 'text'
+      keep_stdout: true
+    telemetry:
+      metrics:
+        enabled: false
+    identity_validation:
+      elevated_session:
+        code_lifespan: '5 minutes'
+        elevation_lifespan: '10 minutes'
+        characters: 8
+        require_second_factor: false
+        skip_second_factor: false
+      reset_password:
+        jwt_secret: '{{ env "JWT_SECRET" }}'
+        jwt_lifespan: '5 minutes'
+        jwt_algorithm: 'HS256'
+    totp:
+      disable: false
+      issuer: 'picklemustard.dev'
+      skew: 1
+      secret_size: 32
+      algorithm: 'SHA1'
+      digits: 6
+      period: 30
+      allowed_algorithms:
+        - 'SHA1'
+      allowed_digits:
+        - 6
+      allowed_periods:
+        - 30
+    webauthn:
+      disable: false
+      enable_passkey_login: true
+      display_name: 'Authelia'
+      attestation_conveyance_preference: 'indirect'
+      timeout: '60 seconds'
+      filtering:
+        permitted_aaguids: []
+        prohibited_aaguids: []
+        prohibit_backup_eligibility: false
+      selection_criteria:
+        attachment: ''
+        discoverability: 'preferred'
+        user_verification: 'preferred'
+      metadata:
+        enabled: false
+        validate_trust_anchor: true
+        validate_entry: true
+        validate_entry_permit_zero_aaguid: false
+        validate_status: true
+        validate_status_permitted: []
+        validate_status_prohibited: 
+          - 'REVOKED'
+          - 'USER_KEY_PHYSICAL_COMPROMISE'
+          - 'USER_KEY_REMOTE_COMPROMISE'
+          - 'USER_VERIFICATION_BYPASS'
+          - 'ATTESTATION_KEY_COMPROMISE'
+    ntp:
+      address: 'udp://time.cloudflare.com:123'
+      version: 4
+      max_desync: '3 seconds'
+      disable_startup_check: false
+      disable_failure: false
+    authentication_backend:
+      ldap:
+        implementation: 'lldap'
+        address: 'ldap://192.168.1.142:3890'
+        base_dn: 'dc=andromeda,dc=picklemustard,dc=dev'
+        user: 'uid=bind_reader,ou=people,dc=andromeda,dc=picklemustard,dc=dev'
+        password: 'purple14735#'
+      password_change:
+        disable: false
+    password_policy:
+      standard:
+        enabled: false
+        min_length: 8
+        max_length: 0
+        require_uppercase: false
+        require_lowercase: false
+        require_number: false
+        require_special: false
+      zxcvbn:
+        enabled: false
+        min_score: 0
+    session:
+      secret: '{{ env "SESSION_SECRET" }}'
+      name: 'authelia_session'
+      same_site: 'lax'
+      inactivity: '5 minutes'
+      expiration: '1 hour'
+      remember_me: '1 month'
+      cookies:
+        - domain: 'picklemustard.dev'
+          authelia_url: 'https://auth.picklemustard.dev'
+          default_redirection_url: 'https://www.picklemustard.dev'
+    regulation:
+      modes:
+      - 'user'
+      max_retries: 3
+      find_time: '2 minutes'
+      ban_time: '5 minutes'
+    storage:
+      encryption_key: '{{ env "STORAGE_ENCRYPTION_KEY" }}'
+      postgres:
+        address: "postgres-postgresql.postgres.svc.cluster.local"
+        database: "authentication"
+        username: "postgres_fid"
+        password: "n&frpqaTRnN95?pr"
+    notifier:
+      disable_startup_check: false
+      smtp:
+        address: 'submissions://picklemustard.dev:465'
+        timeout: '5s'
+        username: 'postmaster'
+          #password: '{{ env "POSTMASTER_PASSWORD" }}'
+        sender: "Authelia <postmaster@picklemustard.dev>"
+        identifier: 'picklemustard.dev'
+        subject: "[Authelia] {title}"
+        startup_check_address: 'postmaster@picklemustard.dev'
+        disable_require_tls: false
+        disable_starttls: false
+        disable_html_emails: false
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: authelia-config
+    app.kubernetes.io/name: authelia-config
+    app.kubernetes.io/version: 4.39.1
+  name: authelia-config
+  namespace: lldap
+

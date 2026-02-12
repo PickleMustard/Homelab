@@ -1,0 +1,40 @@
+ingress:
+  enabled: true
+  servicePort: "https"
+  className: "traefik"
+  path: "/"
+  pathType: "Prefix"
+
+internalDatabase:
+  enabled: false
+
+externalDatabase:
+  enabled: true
+  type: "postgresql"
+  host: "postgres-postgresql.postgres.svc.cluster.local:5432"
+  database: "nextcloud"
+  user: "postgres_fid"
+  password: "n&frpqaTRnN95?pr"
+  existingSecret: 
+    enabled: false
+    secretName: "database-secret"
+    usernameKey: "username"
+    passwordKey: "password"
+
+nextcloud:
+  host: "nextcloud.picklemustard.dev"
+  existingSecret:
+    enabled: true
+    secretName: nextcloud-config
+    usernameKey: username
+    passwordKey: password
+    smtpUsernameKey: smtp-username
+    smtpPasswordKey: smtp-password
+    smtpHostKey: smtp-host
+
+service:
+  type: "ClusterIP"
+
+phpClientHttpsFix:
+  enabled: true
+  protocol: "https"

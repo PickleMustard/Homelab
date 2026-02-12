@@ -1,0 +1,99 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+    #tracing:
+    #  addInternals: true
+
+accessLog:
+  filePath: "/logs/traefik.log"
+  format: json
+  filters:
+    statusCodes:
+      - "200"
+      - "400-599"
+    retryAttempts: true
+    minDuration: "10ms"
+  bufferingSize: 0
+  fields:
+    headers:
+      defaultMode: drop
+      names:
+        User-Agent: keep
+log:
+  level: TRACE
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: "websecure"
+          scheme: "https"
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: "letsencrypt"
+        domains:
+          - main: "picklemustard.dev"
+            sans:
+              - "*.picklemustard.dev"
+    observability:
+      metrics: true
+      tracing: true
+  ssh-git:
+    address: ":2222"
+  mail-smtp:
+    address: ":25"
+  mail-imap:
+    address: ":143"
+  mail-imaps:
+    address: ":993"
+  mail-pop3:
+    address: ":110"
+  mail-pop3s:
+    address: ":995"
+  mail-sieve:
+    address: ":4190"
+  mail-submission:
+    address: ":587"
+  mail-submissions:
+    address: ":465"
+  ldap: 
+    address: ":389"
+  ldaps:
+    address: ":636"
+  minecraft:
+    address: ":25565"
+  postgres:
+    address: ":5432"
+
+
+
+api:
+  debug: true
+  dashboard: true
+  insecure: true 
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: dillon.w.carter@gmail.com
+      storage: acme.json
+      dnsChallenge:
+        provider: cloudflare
+        delayBeforeCheck: 0
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  file:
+    filename: "/etc/traefik/dynamic_conf.yml"
+    watch: true
+

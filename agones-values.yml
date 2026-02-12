@@ -1,0 +1,83 @@
+agones:
+  crds:
+    install: true
+    cleanupOnDelete: true
+    cleanupJobTTL: 60
+  metrics:
+    prometheusServiceDiscovery: false
+    prometheusEnabled: false
+    serviceMonitor:
+      interval: '300s'
+  controller:
+    healthCheck:
+      initialDelaySeconds: 500
+      periodSeconds: 500
+      failureThreshold: 500
+      timeoutSeconds: 500
+    # disableSecret: true
+    # customCertSecretPath:
+    #   - key: tls.crt
+    #     path: server.crt
+    #   - key: tls.key
+    #     path: server.key
+    replicas: 1
+      #allocationApiService:
+      #  annotations:
+      #    cert-manager.io/inject-ca-from: agones-system/picklemustard-dev-tls-agones
+      #  disableCaBundle: true
+      #validatingWebhook:
+      #  annotations:
+      #    cert-manager.io/inject-ca-from: agones-system/picklemustard-dev-tls-agones
+      #  disableCaBundle: true
+      #mutatingWebhook:
+      #  annotations:
+      #    cert-manager.io/inject-ca-from: agones-system/picklemustard-dev-tls-agones
+      #  disableCaBundle: true
+  gameservers:
+    namespaces: ["shulker-system"]
+  extensions:
+    replicas: 1
+      #disableSecret: true
+      #customCertSecretPath:
+      #  - key: tls.crt
+      #    path: server.crt
+      #  - key: tls.key
+      #    path: server.key
+      #allocationApiService:
+      #  annotations:
+      #    cert-manager.io/inject-ca-from: agones-system/picklemustard-dev-tls-agones
+      #  disableCaBundle: true
+      #validatingWebhook:
+      #  annotations:
+      #    cert-manager.io/inject-ca-from: agones-system/picklemustard-dev-tls-agones
+      #  disableCaBundle: true
+      #mutatingWebhook:
+      #  annotations:
+      #    cert-manager.io/inject-ca-from: agones-system/picklemustard-dev-tls-agones
+      #  disableCaBundle: true
+    http:
+      port: 8080
+  ping:
+    install: true
+    replicas: 1
+    http:
+      port: 80
+      serviceType: ClusterIP
+  allocator:
+    logLevel: "debug"
+    install: true
+    replicas: 1
+    service:
+      serviceType: LoadBalancer
+      http:
+        enabled: true
+        portname: http
+        port: 8443
+        targetPort: 8443
+      grpc:
+        enabled: true
+        portName: grpc
+        port: 8444
+        targetport: 8444
+      
+  

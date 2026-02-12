@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: neoforge-server-service
+  namespace: minecraft
+  labels:
+    app.kubernetes.io/instance: mc-server-neoforge
+    app.kubernetes.io/name: neoforge-server-service
+
+spec:
+  type: ClusterIP
+  ports:
+    - name: "server-port"
+      port: 25565
+      targetPort: 25565
+    - name: "rcon-port"
+      port : 25575
+      targetPort: 25575
+  selector:
+    app.kubernetes.io/instance: mc-server-neoforge
+    app.kubernetes.io/name: modded-server-neoforge

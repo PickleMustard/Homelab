@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pterodactyl
+  namespace: pterodactyl
+  labels:
+    app.kubernetes.io/instance: pterodactyl-panel
+    app.kubernetes.io/name: pterodactyl-panel
+spec:
+  selector:
+    app: pterodactyl
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

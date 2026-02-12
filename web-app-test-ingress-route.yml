@@ -1,0 +1,13 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: web-app-tls
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`test.andromeda.picklemustard.com`)
+    kind: Rule
+    services:
+    - name: nginx-service
+      port: 80
