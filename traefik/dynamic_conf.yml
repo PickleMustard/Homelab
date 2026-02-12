@@ -310,7 +310,17 @@ tcp:
         - "mail-sieve"
       rule: "HostSNI(`*`)"
       service: "mail-sieve"
+    ssh-git:
+      entryPoints:
+        - "ssh-git"
+      rule: "HostSNI(`*`)"
+      service: "ssh-git"
   services:
+    ssh-git:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.142:2222"
+
     minecraft:
       loadBalancer:
         servers:
