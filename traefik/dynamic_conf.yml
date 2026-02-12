@@ -16,6 +16,22 @@ http:
         metrics: true
       service: andromeda
 
+    prometheus:
+      rule: "Host(`prometheus.picklemustard.dev`)"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+      service: andromeda
+
+    grafana:
+      rule: "Host(`grafana.picklemustard.dev`)"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+      service: andromeda
+
     adguard:
       rule: "Host(`adguard.picklemustard.dev`)"
       service: "adguard"
@@ -24,9 +40,11 @@ http:
       tls:
         certResolver: "letsencrypt"
 
-    sonarr:
-      rule: "Host(`media-docs.picklemustard.dev`)"
+    media:
+      rule: "Host(`media.picklemustard.dev`)"
       service: andromeda
+      middlewares:
+        - authelia
       entryPoints:
         - "websecure"
       tls:
@@ -40,87 +58,19 @@ http:
       tls:
         certResolver: "letsencrypt"
 
-    postgres:
-      rule: Host(`postgres.picklemustard.dev`)
-      middlewares:
-        - forward-auth
-      service: andromeda
-      entryPoints:
-        - "websecure"
-      tls:
-        certResolver: "letsencrypt"
-
-    homarr:
-      rule: Host(`homarr.picklemustard.dev`)
-      middlewares:
-        - forward-auth
-      entryPoints:
-        - "websecure"
-      tls:
-        certResolver: "letsencrypt"
-      service: andromeda
-
-    rancher:
-      rule: Host(`rancher.picklemustard.dev`)
-      entryPoints:
-        - "websecure"
-      tls: 
-        certResolver: "letsencrypt"
-      service: andromeda
-
-    traefik-kube:
-      rule: "Host(`kubetraefik.picklemustard.dev`)"
-      service: andromeda
-      entryPoints:
-        - "websecure"
-      tls:
-        certResolver: "letsencrypt"
-
-    lldap:
-      rule: Host(`lldap.picklemustard.dev`)
-      service: andromeda
-      entryPoints:
-        - "websecure"
-      tls:
-        certResolver: "letsencrypt"
-
     auth:
       rule: Host(`auth.picklemustard.dev`)
-      service: andromeda-secure
+      service: andromeda
       entryPoints:
         - "websecure"
       tls:
         certResolver: "letsencrypt"
-
-    andromeda-home:
-      rule: HostRegexp(`^.+\.andromeda\.picklemustard\.home$`)
-      service: "andromeda"
-      entryPoints:
-        - "web"
-
-    nextcloud:
-      rule: Host(`nextcloud.picklemustard.dev`)
-      service: "andromeda"
-      entryPoints:
-        - "websecure"
-
-    vaultwarden:
-      rule: Host(`vault.picklemustard.dev`)
-      service: "andromeda"
-      entryPoints:
-        - "websecure"
-
-    redis:
-      rule: Host(`redis.picklemustard.dev`)
-      service: "andromeda"
-      entryPoints:
-        - "websecure"
 
     dashboard:
       rule: "Host(`traefik.picklemustard.dev`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
       service: "api@internal"
       middlewares:
-        - auth
+        - authelia
       entryPoints:
         - "websecure"
       tls:
@@ -128,6 +78,8 @@ http:
 
     synology:
       rule: "Host(`files.picklemustard.dev`)"
+      middlewares:
+        - authelia
       service: "synology"
       entryPoints:
         - "websecure"
@@ -136,6 +88,8 @@ http:
 
     synology_drive:
       rule: "Host(`drive.picklemustard.dev`)"
+      middlewares:
+        - authelia
       service: "synology_drive"
       entryPoints:
         - "websecure"
@@ -145,18 +99,39 @@ http:
     truenas:
       rule: "Host(`truenas.picklemustard.dev`)"
       middlewares:
-        - forward-auth
+        - authelia
       service: "truenas"
       entryPoints:
         - "websecure"
       tls:
         certResolver: "letsencrypt"
 
+    s3-storage:
+      rule: "Host(`store.picklemustard.dev`)"
+      service: "s3"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
+    forgejo:
+      rule: "Host(`git.picklemustard.dev`)"
+      service: "forgejo"
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: "letsencrypt"
+
   services:
+    api-backend:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.200.242"
+
     adguard:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.253"
+          - url: "http://192.168.200.253"
 
     dashboard:
       loadBalancer:
@@ -166,66 +141,100 @@ http:
     andromeda:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.142"
+          - url: "http://192.168.200.242"
+        passHostHeader: true
+
+    andromeda-auth:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.200.242:9091"
         passHostHeader: true
 
     andromeda-dashboard:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.142:8080"
+          - url: "http://192.168.200.242:8080"
         passHostHeader: true
 
     andromeda-secure:
       loadBalancer:
         servers:
-          - url: "https://andromeda.picklemustard.dev"
+          - url: "https://auth.picklemustard.dev"
         passHostHeader: true
 
     lldap-service:
       loadBalancer:
         servers:
-          - url: "https://192.168.1.142:443"
+          - url: "https://192.168.200.242:443"
         passHostHeader: true
 
     lldap-dashboard-service:
       loadBalancer:
         servers:
-          - url: "https://192.168.1.142:17170"
+          - url: "https://192.168.200.242:17170"
         passHostHeader: true
 
     synology:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.3:5000/"
+          - url: "http://192.168.88.250:5000/"
+
+    secrets-vault:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.200.242"
 
     synology_drive:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.3:10002"
+          - url: "http://192.168.88.250:10002"
 
     truenas:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.77"
+          - url: "http://192.168.200.205"
+        passHostHeader: true
+        sticky:
+          cookie:
+            name: "truenas-session"
+
+    s3:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.200.205:30292"
+        passHostHeader: true
+
+    forgejo:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.200.242"
         passHostHeader: true
         sticky:
           cookie:
             name: "truenas-session"
 
   middlewares:
+    strip-api-prefix:
+      stripPrefix:
+        prefixes:
+          - "/pages"
 
-    forward-auth:
+    authelia-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+          X-Forwarded-Host: "auth.picklemustard.dev"
+          X-Forwarded-Uri: "/"
+
+    authelia:
       forwardAuth:
-        address: 'https://auth.picklemustard.dev/api/authz/ext-authz?redirect_url'
+        address: 'https://auth.picklemustard.dev/authelia/api/verify?rd=https://auth.picklemustard.dev/authelia'
         trustForwardHeader: true
-        preserveLocationHeader: true
-        forwardBody: true
-        authResponseHeaders: 
-          - 'Remote-User'
-          - 'Remote-Groups'
-          - 'Remote-Email'
-          - 'Remote-Name'
-          - 'Set-Cookie'
+        authResponseHeaders:
+          - "Remote-User"
+          - "Remote-Group"
+          - "Remote-Email"
+          - "Remote-Name"
     auth:
       basicAuth:
         users:
@@ -246,8 +255,7 @@ tcp:
       rule: "HostSNI(`postgres.picklemustard.dev`)"
       service: "postgres"
       entryPoints:
-        - "web"
-        - "websecure"
+        - "postgres"
       tls:
         certResolver: "letsencrypt"
     minecraft:
@@ -260,6 +268,13 @@ tcp:
       service: "ldap"
       entryPoints:
         - "ldap"
+    ldaps:
+      rule: "HostSNI(`lldap.picklemustard.dev`)"
+      tls:
+        certResolver: "letsencrypt"
+      service: "ldap"
+      entryPoints:
+        - "ldaps"
     mail-smtp:
       entryPoints:
         - "mail-smtp"
@@ -292,7 +307,7 @@ tcp:
     mail-submission:
       entryPoints:
         - "mail-submission"
-      rule: "HostSNI(`picklemustard.dev`)"
+      rule: "HostSNIRegexp(`picklemustard.dev|mail.picklemustard.dev|smtp.picklemustard.dev`)"
       service: "mail-submission"
       tls:
         certResolver: "letsencrypt"
@@ -300,68 +315,71 @@ tcp:
     mail-submissions:
       entryPoints:
         - "mail-submissions"
-      rule: "HostSNI(`picklemustard.dev`)"
+      rule: "HostSNIRegexp(`picklemustard.dev|mail.picklemustard.dev|smtp.picklemustard.dev`)"
       service: "mail-submissions"
       tls:
         certResolver: "letsencrypt"
         passthrough: true
     mail-sieve:
-      entryPoints: 
+      entryPoints:
         - "mail-sieve"
       rule: "HostSNI(`*`)"
       service: "mail-sieve"
-    ssh-git:
+    git-ssh:
       entryPoints:
         - "ssh-git"
       rule: "HostSNI(`*`)"
-      service: "ssh-git"
+      service: "git-ssh"
   services:
-    ssh-git:
-      loadBalancer:
-        servers:
-          - address: "192.168.1.142:2222"
-
     minecraft:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:25565"
+          - address: "192.168.200.242:25565"
     ldap:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:3890"
+          - address: "192.168.200.242:3890"
+    ldaps:
+      loadBalancer:
+        servers:
+          - address: "192.168.200.242:3890"
     mail-smtp:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:25"
+          - address: "192.168.200.242:25"
     mail-submissions:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:10465"
+          - address: "192.168.200.242:10465"
     mail-submission:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:10587"
+          - address: "192.168.200.242:10587"
     mail-imap:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:143"
+          - address: "192.168.200.242:143"
     mail-imaps:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:994"
+          - address: "192.168.200.242:994"
     mail-pop3:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:110"
+          - address: "192.168.200.242:110"
     mail-pop3s:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:995"
+          - address: "192.168.200.242:995"
     mail-sieve:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:4190"
+          - address: "192.168.200.242:4190"
     postgres:
       loadBalancer:
         servers:
-          - address: "192.168.1.142:31402"
+          - address: "192.168.200.242:31402"
+    git-ssh:
+      loadBalancer:
+        servers:
+          - address: "192.168.200.242:2222"
