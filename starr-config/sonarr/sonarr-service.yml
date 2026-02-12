@@ -5,12 +5,22 @@ metadata:
     app.kubernetes.io/instance: sonarr-service
     app.kubernetes.io/name: sonarr-service
   name: sonarr-service
-  namespace: media 
+  namespace: media
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8989"
+    prometheus.io/path: "/metrics"
 spec:
   ports:
     - name: "8989"
       port: 8989 
       targetPort: 8989 
+    - name: "6767"
+      port: 6767
+      targetPort: 6767
+    - name: "9696"
+      port: 9696
+      targetPort: 9696
   selector:
-    app.kubernetes.io/instance: sonarr
-    app.kubernetes.io/name: sonarr
+    app.kubernetes.io/instance: servarr
+    app.kubernetes.io/name: servarr

@@ -2,19 +2,19 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: authelia-ingress
-  namespace: lldap
+  namespace: auth
   annotations:
-    spec.ingressClassName: "traefik"
-    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: "web"
+    traefik.ingress.kubernetes.io/router.middlewares: 'kube-system-strip-path-prefix@kubernetescrd'
     app.kubernetes.io/instance: authelia
     app.kubernetes.io/name: authelia
 spec:
+  ingressClassName: traefik
   rules:
   - host: auth.picklemustard.dev
     http:
       paths:
-      - path: /
+      - path: /authelia
         pathType: Prefix
         backend:
           service:

@@ -2,13 +2,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: lldap-ingress
-  namespace: lldap
+  namespace: auth
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
-    spec.ingressClassName: traefik
+    lldap.picklemustard.dev/strip-path-prefix: "disabled"
 spec:
+  ingressClassName: traefik
   rules:
-    - host: lldap.picklemustard.dev
+    - host: auth.picklemustard.dev
       http:
         paths:
           - path: /

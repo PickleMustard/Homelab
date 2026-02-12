@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: lldap-cert
+  namespace: auth
+spec:
+  dnsNames:
+    - users.picklemustard.dev
+  secretName: lldap-cert
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: cloudflare-issuer

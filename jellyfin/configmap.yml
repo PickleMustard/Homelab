@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jellyfin-system-config
+  namespace: media
+data:
+  system.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <SystemConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <EnableRealtimeMonitor>false</EnableRealtimeMonitor>
+    </SystemConfiguration>
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jellyfin-db-config
+  namespace: media
+data:
+  database.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <DatabaseConfigurationOptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <DatabaseType>Jellyfin-SQLite</DatabaseType>
+      <LockingBehavior>Optimistic</LockingBehavior>
+    </DatabaseConfigurationOptions>
+

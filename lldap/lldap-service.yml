@@ -4,11 +4,14 @@ metadata:
   annotations:
     lldap: https://github.com/nitnelave/lldap
     k8s: https://github.com/Evantage-WS/lldap-kubernetes
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "17170"
+    prometheus.io/path: "/metrics"
   labels:
     app.kubernetes.io/instance: lldap-service
     app.kubernetes.io/name: lldap-service
   name: lldap-service
-  namespace: lldap
+  namespace: auth 
 spec:
   ports:
     - name: "3890"

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: bazarr-service
+    app.kubernetes.io/name: bazarr-service
+  name: bazarr-service
+  namespace: media
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "6767"
+    prometheus.io/path: "/metrics"
+spec:
+  ports:
+    - name: "6767"
+      port: 6767
+      targetPort: 6767
+  selector:
+    app.kubernetes.io/instance: servarr
+    app.kubernetes.io/name: servarr

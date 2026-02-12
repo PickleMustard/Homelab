@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-config
+  namespace: auth
+  labels:
+    app.kubernetes.io/instance: vault-config
+    app.kubernetes.io/name: vault-config
+data:
+  vault.hcl: |
+    listener "tcp" {
+      address = "0.0.0.0:8200"
+      cluster_address = "0.0.0.0:8201"
+      tls_disable = 1
+    }
+
+    storage "postgresql" {
+      connection_url = "postgres://postgres_fid:IKj%230y1mZb%23zdDS%23TrLP@postgres-postgresql.postgres.svc.cluster.local:5432/vault"
+      table = "vault_kv_store"
+    }
+
+    ui = true
+
+    api_addr = "http://auth.picklemustard.dev/vault:8200"
+    cluster_addr = "http://localhost/vault:8201"
+
+    log_level = "info"
+
+    disable_mlock = true

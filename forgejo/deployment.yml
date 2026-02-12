@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forgejo
+  namespace: git
+  labels:
+    app.kubernetes.io/name: forgejo
+    app.kubernetes.io/instance: forgejo
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: forgejo
+      app.kubernetes.io/instance: forgejo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: forgejo
+        app.kubernetes.io/instance: forgejo
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: forgejo
+          image: code.forgejo.org/forgejo/forgejo:14.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+            - name: ssh
+              containerPort: 22
+          envFrom:
+            - configMapRef:
+                name: forgejo-config
+          env:
+            - name: FORGEJO__database__PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-postgres-secrets
+                  key: password
+            - name: FORGEJO__security__SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-secrets
+                  key: FORGEJO__security__SECRET_KEY
+            - name: FORGEJO__LDAP__0__BIND_DN
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-secrets
+                  key: bindDn
+            - name: FORGEJO__LDAP__0__BIND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-secrets
+                  key: bindPassword
+            - name: FORGEJO__STORAGE__MINIO_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-minio-secrets
+                  key: MINIO_SECRET_ACCESS_KEY
+            - name: FORGEJO__ADMIN__USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-admin-secrets
+                  key: username
+            - name: FORGEJO__ADMIN__EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-admin-secrets
+                  key: email
+            - name: FORGEJO__ADMIN__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-admin-secrets
+                  key: password
+          volumeMounts:
+            - name: data-storage
+              mountPath: /data
+          resources:
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+      volumes:
+        - name: data-storage
+          persistentVolumeClaim:
+            claimName: forgejo-local

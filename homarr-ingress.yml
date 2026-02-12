@@ -6,10 +6,10 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
     traefik.ingress.kubernetes.io/router.tls: 'false'
-    spec.ingressClassName: traefik
 spec:
+  ingressClassName: traefik
   rules:
-    - host: dashboard.andromeda.picklemustard.dev
+    - host: andromeda.picklemustard.dev
       http:
         paths:
           - path: /
@@ -19,7 +19,7 @@ spec:
                 name: homarr
                 port:
                   number: 7575
-    - host: dashboard.andromeda.picklemustard.home
+    - host: andromeda.picklemustard.home
       http:
         paths:
           - path: /

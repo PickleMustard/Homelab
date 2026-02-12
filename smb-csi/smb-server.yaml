@@ -1,0 +1,64 @@
+apiVersion: storage.k8s.io/v1
+kind: CSIDriver
+metadata:
+  name: smb.csi.k8s.io
+spec:
+  attachRequired: true
+  podInfoOnMount: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smb-server
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - port: 445
+      targetPort: 445
+      protocol: TCP
+      name: smb
+  selector:
+    app: smb-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smb-server
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smb-server
+  template:
+    metadata:
+      labels:
+        app: smb-server
+    spec:
+      containers:
+        - name: samba
+          image: dperson/samba:latest
+          ports:
+            - containerPort: 445
+              protocol: TCP
+          env:
+            - name: TZ
+              value: UTC
+            - name: USER
+              value: "media;media;YOUR_SMB_PASSWORD"
+            - name: SHARE
+              value: "media;/mount;yes;no;no;media"
+          args:
+            - -u
+            - "media;YOUR_SMB_PASSWORD"
+            - -s
+            - "media;/mount;yes;no;no;media"
+          volumeMounts:
+            - name: media-storage
+              mountPath: /mount
+      volumes:
+        - name: media-storage
+          hostPath:
+            path: /path/to/your/media/storage
+            type: DirectoryOrCreate

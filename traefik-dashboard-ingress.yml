@@ -5,12 +5,14 @@ metadata:
   namespace: kube-system
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: 'kube-system-strip-path-prefix@kubernetescrd,kube-system-traefik-dashboard-x-forwarded-prefix@kubernetescrd'
 spec:
+  ingressClassName: traefik
   rules:
-    - host: kubetraefik.picklemustard.dev 
+    - host: andromeda.picklemustard.dev
       http:
         paths:
-          - path: /
+          - path: /api/traefik
             pathType: Prefix
             backend:
               service:

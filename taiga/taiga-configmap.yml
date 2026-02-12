@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taiga-front-config
+  namespace: collab
+data:
+  conf.json: |
+    {
+      "api": "https://andromeda.picklemustard.dev/collab/taiga/api/v1/",
+      "eventsUrl": null,
+      "baseHref": "/collab/taiga/",
+      "loginFormType": "ldap",
+      "eventsMaxMissedHeartbeats": 5,
+      "eventsHeartbeatIntervalTime": 60000,
+      "eventsReconnectTryInterval": 10000,
+      "debug": true,
+      "debugInfo": true,
+      "defaultLanguage": "en",
+      "themes": [
+          "taiga"
+      ],
+      "defaultTheme": "taiga",
+      "defaultLoginEnabled": true,
+      "publicRegisterEnabled": true,
+      "feedbackEnabled": true,
+      "supportUrl": "https://community.taiga.io/",
+      "privacyPolicyUrl": null,
+      "termsOfServiceUrl": null,
+      "maxUploadFileSize": null,
+      "contribPlugins": [],
+      "tagManager": {
+          "accountId": null
+      },
+      "tribeHost": null,
+      "enableAsanaImporter": false,
+      "enableGithubImporter": false,
+      "enableJiraImporter": false,
+      "enableTrelloImporter": false,
+      "gravatar": false,
+      "rtlLanguages": [
+          "ar",
+          "fa",
+          "he"
+      ]
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taiga-front-nginx-config
+  namespace: collab
+data:
+  default.conf: |
+    server {
+      listen 80 default_server;
+
+      client_max_body_size 100M;
+      charset utf-8;
+
+      location /collab/taiga/ {
+          alias /usr/share/nginx/html/;
+          index index.html;
+          try_files $uri $uri/ index.html =404;
+      }
+
+        # API
+      location /collab/taiga/api/ {
+          proxy_pass http://localhost:8000/api/;
+          proxy_pass_header Server;
+          proxy_set_header Host $http_host;
+          proxy_redirect off;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Scheme $scheme;
+      }
+
+      # Admin
+      location /collab/taiga/admin/ {
+          proxy_pass http://localhost:8000/admin/;
+          proxy_pass_header Server;
+          proxy_set_header Host $http_host;
+          proxy_redirect off;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Scheme $scheme;
+      }
+
+      # Static
+      location /collab/taiga/static/ {
+          proxy_pass http://localhost:8000/static/;
+          proxy_pass_header Server;
+          proxy_set_header Host $http_host;
+          proxy_redirect off;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Scheme $scheme;
+      }
+
+      location /collab/taiga/media/ {
+          proxy_pass http://localhost:8000/media/;
+          proxy_pass_header Server;
+          proxy_set_header Host $http_host;
+          proxy_redirect off;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Scheme $scheme;
+      }
+    }

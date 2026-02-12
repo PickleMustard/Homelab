@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-path-prefix
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: strip-path
+    app.kubernetes.io/name: strip-path-prefix
+spec:
+  stripPrefixRegex:
+    regex:
+      - "^/vault"
+      - "^/vaultwarden"
+      - "^/stream"
+      - "^/api/traefik"
+      - "^/api/rancher"
+      - "^/api/firefly"
+      - "^/api/firefly-importer"

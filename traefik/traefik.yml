@@ -43,8 +43,6 @@ entryPoints:
     observability:
       metrics: true
       tracing: true
-  ssh-git:
-    address: ":2222"
   mail-smtp:
     address: ":25"
   mail-imap:
@@ -63,13 +61,8 @@ entryPoints:
     address: ":465"
   ldap: 
     address: ":389"
-  ldaps:
-    address: ":636"
   minecraft:
     address: ":25565"
-  postgres:
-    address: ":5432"
-
 
 
 api:

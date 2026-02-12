@@ -7,13 +7,14 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/server.passhostheader: "true"
-    spec.ingressClassName: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: 'kube-system-strip-path-prefix@kubernetescrd,kube-system-rancher-x-forwarded-prefix@kubernetescrd'
 spec:
+  ingressClassName: traefik
   rules:
-    - host: rancher.picklemustard.dev
+    - host: andromeda.picklemustard.dev
       http:
         paths:
-          - path: /
+          - path: /api/rancher
             pathType: Prefix
             backend:
               service:

@@ -1,0 +1,26 @@
+replicaCount: 1
+deploymentStrategyType: RollingUpdate
+image:
+  registry: "docker.io"
+  repository: "fireflyiii/core"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: "firefly-finance"
+fullnameOverride: "firefly-finance"
+
+persistence:
+  enabled: true
+  storageClassName: local-path
+  accessModes: ReadWriteOnce
+  storage: 1Gi
+
+config:
+  existingSecret: firefly-secrets
+  env:
+    DB_HOST: postgres-postgresql.postgres.svc.cluster.local
+    DB_CONNECTION: pgsql
+    DB_PORT: 5432
+
+  cronjob:
+    enabled: false

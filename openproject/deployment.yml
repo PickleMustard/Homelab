@@ -1,0 +1,148 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openproject
+  namespace: collab
+  labels:
+    app.kubernetes.io/instance: openproject
+    app.kubernetes.io/name: openproject
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: openproject
+      app.kubernetes.io/name: openproject
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: openproject
+        app.kubernetes.io/name: openproject
+    spec:
+      containers:
+        - name: openproject
+          image: openproject/openproject:16-slim
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: RUBY_YJIT_ENABLE
+              value: "false"
+            - name: OPENPROJECT_WEB_WORKERS
+              value: "1"
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: openproject-secrets
+                  key: secret-key-base
+            - name: OPENPROJECT_HOST__NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT_HOST__NAME
+            - name: OPENPROJECT_HTTPS
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT_HTTPS
+            - name: OPENPROJECT_RAILS__RELATIVE__URL__ROOT
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT_RAILS__RELATIVE__URL__ROOT
+            - name: OPENPROJECT_DEFAULT__LANGUAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT_DEFAULT__LANGUAGE
+            - name: DATABASE_URL
+              value: "postgresql://postgres-postgresql.postgres.svc.cluster.local:5432/openproject"
+            - name: OPENPROJECT_DB_USERNAME
+              value: "postgres_fid"
+            - name: OPENPROJECT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openproject-secrets
+                  key: postgres-password
+            - name: OPENPROJECT_SEED_ADMIN_USER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT_SEED__ADMIN__USER__NAME
+            - name: OPENPROJECT_SEED_ADMIN_USER_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT_SEED__ADMIN__USER__PASSWORD
+            - name: OPENPROJECT__LDAP__HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT__LDAP__HOST
+            - name: OPENPROJECT__LDAP__PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT__LDAP__PORT
+            - name: OPENPROJECT__LDAP__BASE
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT__LDAP__BASE
+            - name: OPENPROJECT__LDAP__BIND__DN
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT__LDAP__BIND__DN
+            - name: OPENPROJECT__LDAP__BIND__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openproject-secrets
+                  key: ldap-password
+            - name: OPENPROJECT__LDAP__ATTRIBUTE__LOGIN
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT__LDAP__ATTRIBUTE__LOGIN
+            - name: OPENPROJECT__LDAP__ATTRIBUTE__FIRSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT__LDAP__ATTRIBUTE__FIRSTNAME
+            - name: OPENPROJECT__LDAP__ATTRIBUTE__LASTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT__LDAP__ATTRIBUTE__LASTNAME
+            - name: OPENPROJECT__LDAP__ATTRIBUTE__EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT__LDAP__ATTRIBUTE__EMAIL
+            - name: OPENPROJECT__LDAP__VERIFY__PEER
+              valueFrom:
+                configMapKeyRef:
+                  name: openproject-config
+                  key: OPENPROJECT__LDAP__VERIFY__PEER
+                    #volumeMounts:
+                    #  - mountPath: /var/openproject/assets
+                    #    name: openproject-data
+                    #    subPath: assets
+                    #  - mountPath: /var/openproject/files
+                    #    name: openproject-data
+                    #    subPath: files
+          resources:
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+      restartPolicy: Always
+      volumes:
+        - name: openproject-data
+          persistentVolumeClaim:
+            claimName: openproject-data

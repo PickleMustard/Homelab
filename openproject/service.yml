@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: openproject-service
+  namespace: collab
+  labels:
+    app.kubernetes.io/instance: openproject
+    app.kubernetes.io/name: openproject
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  selector:
+    app.kubernetes.io/instance: openproject
+    app.kubernetes.io/name: openproject
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080

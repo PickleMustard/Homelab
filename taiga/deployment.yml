@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taiga
+  namespace: collab
+  labels:
+    app.kubernetes.io/instance: taiga
+    app.kubernetes.io/name: taiga
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: taiga
+      app.kubernetes.io/name: taiga
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: taiga
+        app.kubernetes.io/name: taiga
+    spec:
+      initContainers:
+      - name: copy-config
+        image: busybox:latest
+        command: ["/bin/sh"]
+        args:
+          - -c
+          - >-
+            cp /config-source/config.py /config-dest/config.py &&
+            cp /default-config-source/default.conf /default-config-dest/default.conf
+        volumeMounts:
+          - name: config
+            mountPath: /config-source
+          - name: config-rw
+            mountPath: /config-dest
+          - name: default-config
+            mountPath: /default-config-source
+          - name: default-config-rw
+            mountPath: /default-config-dest
+      containers:
+        - name: taiga-back
+          image: taigaio/taiga-back:latest
+          ports:
+            - containerPort: 8000
+              name: api
+              protocol: TCP
+          command: ["/bin/bash"]
+          args:
+            - -c
+            - >-
+              pip install taiga-contrib-ldap-auth-enhanced &&
+              set -euo pipefail &&
+              python manage.py migrate &&
+              python manage.py loaddata initial_project_templates &&
+              chown -R taiga:taiga /taiga-back &&
+              exec gosu taiga gunicorn taiga.wsgi:application --name taiga_api --bind 0.0.0.0:8000 --workers 3 --worker-tmp-dir /dev/shm --log-level=debug --access-logfile - "$@"
+
+          envFrom:
+            - secretRef:
+                name: taiga-secrets
+          env:
+            - name: TAIGA_SITES_SCHEME
+              value: "https"
+            - name: TAIGA_SITES_DOMAIN
+              value: "andromeda.picklemustard.dev"
+            - name: FORCE_SCRIPT_NAME
+              value: "/collab/taiga/"
+            - name: CELERY_ENABLED
+              value: "false"
+            - name: PUBLIC_REGISTER_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: taiga-config
+                  key: PUBLIC_REGISTER_ENABLED
+            - name: ENABLE_TELEMETRY
+              value: "true"
+          volumeMounts:
+            - name: plugins
+              mountPath: /taiga-back/taiga_contrib_ldap_auth_ext
+              subPath: taiga_contrib_ldap_auth_ext
+            - name: config-rw
+              mountPath: /taiga-back/settings/config.py
+              subPath: config.py
+            - name: media
+              mountPath: /taiga-back/media
+          resources:
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+        - name: taiga-front
+          image: taigaio/taiga-front:latest
+          env:
+            - name: DEBUG
+              value: "true"
+            - name: TAIGA_SUBPATH
+              value: "/collab/taiga"
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          volumeMounts:
+            - name: frontend-config
+              mountPath: /usr/share/nginx/html/conf.json
+              subPath: conf.json
+            - name: default-config-rw
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+      volumes:
+        - name: plugins
+          emptyDir: {}
+        - name: config-rw
+          emptyDir: {}
+        - name: default-config-rw
+          emptyDir: {}
+        - name: config
+          configMap:
+            defaultMode: 420
+            name: taiga-back-configpy
+        - name: media
+          persistentVolumeClaim:
+            claimName: taiga-data
+        - name: frontend-config
+          configMap:
+            name: taiga-front-config
+        - name: default-config
+          configMap:
+            name: taiga-front-nginx-config
+      restartPolicy: Always
+

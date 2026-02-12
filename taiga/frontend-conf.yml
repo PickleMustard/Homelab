@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taiga-frontend-config
+  namespace: collab
+data:
+  conf.json: |
+    {
+      "api": "https://andromeda.picklemustard.dev/collab/taiga/api/v1/",
+      "eventsUrl": "",
+      "baseHref": "/collab/taiga/",
+      "loginFormType": "ldap",
+      "publicRegisterEnabled": false,
+      "plugins": []
+    }

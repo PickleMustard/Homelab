@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: authelia-data-pvc
-  namespace: lldap
+  namespace: auth
 spec:
   accessModes:
     - ReadWriteOnce

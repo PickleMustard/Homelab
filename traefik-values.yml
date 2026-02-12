@@ -1,9 +1,3 @@
-globalArguments:
-  - "--global.sendanonymoususage=false"
-  - "--global.checknewversion=false"
-  - "--api.dashboard=true"
-  - "--api.insecure=true"
-
 additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=TRACE"
@@ -25,6 +19,20 @@ ports:
   ldap:
     port: 3890
     exposedPort: 3890
+    expose:
+      default: true
+    protocol: TCP
+
+  auth:
+    port: 9091
+    exposedPort: 9091
+    expose:
+      default: true
+    protocol: TCP
+
+  postgres:
+    port: 5432
+    exposedPort: 5432
     expose:
       default: true
     protocol: TCP
@@ -95,13 +103,15 @@ ports:
   web:
     port: 80
     forwardedHeaders:
+      trustedIPs:
+        - 192.168.200.200
       insecure: true
     proxyProtocol:
       insecure: true
 
-  websecure:
-    tls:
-      enabled: true
+  ssh-git:
+    port: 22
+    exposedPort: 2222
 
 gateway:
   enabled: true
@@ -127,7 +137,6 @@ providers:
   kubernetesCRD:
     enabled: true
     allowCrossNamespace: true
-    namespace: []
   kubernetesIngress:
     enabled: true
 

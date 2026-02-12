@@ -2,16 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: authelia
-  namespace: lldap
+  namespace: auth
   labels:
     app.kubernetes.io/instance: authelia
     app.kubernetes.io/name: authelia
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/instance: authelia
       app.kubernetes.io/name: authelia
-        #replicas: 1
   template:
     metadata:
       labels:
@@ -23,33 +23,22 @@ spec:
       - name: authelia
         image: authelia/authelia:latest
         env:
-        - name: "HMAC_SECRET"
-          valueFrom:
-            secretKeyRef:
-              name: "authelia-credentials"
-              key: "hmac-secret"
-        - name: "STALWART_CLIENT_SECRET"
-          valueFrom:
-            secretKeyRef:
-              name: "authelia-credentials"
-              key: "stalwart-client-secret"
-        - name: "JWT_SECRET"
-          valueFrom:
-            secretKeyRef:
-              name: "authelia-credentials"
-              key: "jwt-secret"
-        - name: "STORAGE_ENCRYPTION_KEY"
-          valueFrom:
-            secretKeyRef:
-              name: "authelia-credentials"
-              key: "storage-encryption-key"
-        - name: "SESSION_SECRET"
-          valueFrom:
-            secretKeyRef:
-              name: "authelia-credentials"
-              key: "session-secret"
+        - name: "X_AUTHELIA_CONFIG_FILTERS"
+          value: "template"
+        - name: "AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE"
+          value: /secrets/authelia/hmac-secret
+        - name: "AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE"
+          value: /secrets/authelia/jwt-secret
+        - name: "AUTHELIA_SESSION_SECRET_FILE"
+          value: /secrets/authelia/session-secret
+        - name: "AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE"
+          value: /secrets/authelia/ldap-password
+        - name: "AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE"
+          value: /secrets/authelia/postgres-password
         - name: "AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE"
-          value: '/app/secrets/postmaster-secret'
+          value: /secrets/authelia/postmaster-secret
+        - name: "AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE"
+          value: /secrets/authelia/storage-encryption-key
         ports:
         - containerPort: 9091
           name: http
@@ -59,8 +48,14 @@ spec:
           mountPath: /config/configuration.yml
           readOnly: false
           subPath: configuration.yml
-        - mountPath: '/app/secrets/'
-          name: 'secrets'
+        - name: authelia-secrets
+          mountPath: '/secrets/authelia'
+          readOnly: true
+        - name: jwks
+          mountPath: '/secrets/authelia/jwks'
+          readOnly: true
+        - name: client
+          mountPath: '/secrets/authelia/client'
           readOnly: true
         - name: data
           mountPath: /data
@@ -73,12 +68,15 @@ spec:
           readOnly: true
           subPath: tls.key
       volumes:
-      - name: 'secrets'
+      - name: authelia-secrets
         secret:
-          secretName: 'authelia-credentials'
-          items:
-            - key: 'postmaster-secret'
-              path: 'postmaster-secret'
+          secretName: authelia-credentials
+      - name: jwks
+        secret:
+          secretName: authelia-oidc-jwks
+      - name: client
+        secret:
+          secretName: authelia-oidc-clients
       - name: config
         configMap:
           defaultMode: 0777

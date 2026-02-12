@@ -2,8 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app.kubernetes.io/instance: lldap-pvc
-    app.kubernetes.io/name: lldap-pvc
+    app.kubernetes.io/instance: lldap-data
+    app.kubernetes.io/name: lldap-data
   name: lldap-data
   namespace: auth
 spec:

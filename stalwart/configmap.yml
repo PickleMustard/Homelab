@@ -20,7 +20,7 @@ data:
     [directory]
       [directory."ldap"]
         type = "ldap"
-        url = "ldap://192.168.1.142:3890"
+        url = "ldap://192.168.200.242:3890"
         base-dn = "dc=andromeda,dc=picklemustard,dc=dev"
         timeout = "30s"
       [directory."ldap".bind]
@@ -43,12 +43,12 @@ data:
         email-alias = "mailAlias"
         quota = "diskQuota"
 
-    [metrics]
-      [metrics.prometheus]
-        enable = true
-        [metrics.prometheus.auth]
-          secret = "%{env:METRICS_SECRET}%"
-          username = "%{env:METRICS_USERNAME}%"
+        #[metrics]
+        #  [metrics.prometheus]
+        #    enable = true
+        #    [metrics.prometheus.auth]
+        #      secret = "%{env:METRICS_SECRET}%"
+        #      username = "%{env:METRICS_USERNAME}%"
 
     [certificate."default"]
     cert = "%{file:/opt/stalwart/etc/private/tls.cert}%"
@@ -116,7 +116,7 @@ data:
       [store.postgresql]
         database = "email"
         host = "postgres-postgresql.postgres.svc.cluster.local"
-        password = "n&frpqaTRnN95?pr"
+        password = "%{env:DB_PASSWORD}%"
         port = 5432
         timeout = "15s"
         type = "postgresql"

@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: readarr-ingress
+  namespace: media
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: 'kube-system-strip-path-prefix@kubernetescrd,kube-system-readarr-x-forwarded-prefix@kubernetescrd'
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: media.picklemustard.dev
+      http:
+        paths:
+          - path: /docs/book
+            pathType: Prefix
+            backend:
+              service:
+                name: readarr-service
+                port:
+                  number: 8787
