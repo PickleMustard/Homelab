@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jenkins-configuration
+  namespace: jenkins
+  labels:
+    app.kubernetes.io/name: jenkins
+    app.kubernetes.io/instance: jenkins
+data:
+  JENKINS_URL: "https://andromeda.picklemustard.dev/tools/jenkins"
+  JENKINS_OPTS: "--prefix=/tools/jenkins/"
+  JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+  FORGEJO_URL: "https://git.picklemustard.dev"

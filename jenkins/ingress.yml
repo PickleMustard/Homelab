@@ -1,0 +1,15 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jenkins-ingressroute
+  namespace: jenkins
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`andromeda.picklemustard.dev`) && PathPrefix(`/tools/jenkins`)
+      kind: Rule
+      priority: 1
+      services:
+        - name: jenkins
+          port: 8080

@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: jenkins
+  labels:
+    app.kubernetes.io/name: jenkins
+    app.kubernetes.io/instance: jenkins
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: jenkins
+      app.kubernetes.io/instance: jenkins
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: jenkins
+        app.kubernetes.io/instance: jenkins
+    spec:
+      serviceAccountName: jenkins-controller
+      securityContext:
+        fsGroup: 1000
+          #initContainers:
+          #  - name: init-plugins
+          #    image: jenkins/jenkins:lts
+          #    command:
+          #      - /bin/sh
+          #      - -c
+          #      - |
+          #        jenkins-plugin-cli --plugins \
+          #          kubernetes:4296.v20a_20e79e256f \
+          #          kubernetes-cli:1.12.0 \
+          #          docker-workflow:580.vc0c340571a_9a_ \
+          #          docker-plugin:1.7.0 \
+          #          git:5.7.0 \
+          #          forgejo:2.4.1 \
+          #          ldap:725.vcb_cb_e615f78d \
+          #          configuration-as-code:1909.vb_b_f59b_78746a_ \
+          #          generic-webhook-trigger:2.3.1 \
+          #          pipeline-stage-view:2.34 \
+          #          workflow-aggregator:600.vb_57cdd4643b_2 \
+          #          build-timeout:1.33 \
+          #          timestamper:1.28 \
+          #          ws-cleanup:0.48 \
+          #          credentials:1405.vb_cda_74a_f7952 \
+          #          credentials-binding:687.v619cb_15e923f
+          #    volumeMounts:
+          #      - name: jenkins-home
+          #        mountPath: /var/jenkins_home
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins:lts
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: agent
+              containerPort: 50000
+          env:
+            - name: CASC_JENKINS_CONFIG
+              value: "/var/jenkins_home/casc/jcasc-config.yml"
+            - name: JENKINS_ADMIN_ID
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-admin-secrets
+                  key: username
+            - name: JENKINS_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-admin-secrets
+                  key: password
+            - name: POSTGRES_HOST
+              value: "postgres-postgresql.postgres.svc.cluster.local"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              value: "jenkins"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-postgres-secrets
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-postgres-secrets
+                  key: password
+            - name: LDAP_BIND_DN
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-ldap-secrets
+                  key: bindDn
+            - name: LDAP_BIND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-ldap-secrets
+                  key: bindPassword
+          envFrom:
+            - configMapRef:
+                name: jenkins-configuration
+          volumeMounts:
+            - name: jenkins-home
+              mountPath: /var/jenkins_home
+            - name: jcasc-config
+              mountPath: /var/jenkins_home/casc
+              readOnly: true
+          resources:
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+      volumes:
+        - name: jenkins-home
+          persistentVolumeClaim:
+            claimName: jenkins-home
+        - name: jcasc-config
+          configMap:
+            name: jenkins-jcasc-config
