@@ -1,0 +1,53 @@
+namespaceOverride: "collab"
+nodeSelector:
+  kubernetes.io/hostname: "andromeda-alpheratz"
+
+persistence:
+  enabled: true
+  accessModes:
+    - "ReadWriteOnce"
+  storageClassName: "local-path"
+
+podSecurityContext:
+  enabled: true
+  fsGroup: 1000
+containerSecurityContext:
+  enabled: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+
+openproject:
+  useTmpVolumes: false
+  https: false
+  host: "andromeda.picklemustard.dev"
+  railsRelativeUrlRoot: "/collab/plan"
+
+s3:
+  enabled: false
+  auth:
+    accessKeyId: "openproject-access"
+    secretAccessKey: "openproject-s3-secret"
+  region: "us-east-1"
+  bucketName: "project-management"
+  endpoint: "store.picklemustard.dev"
+  host: "store.picklemustard.dev"
+  pathStyle: false
+  signatureVersion: 4
+  useIamProfile: false
+
+postgresql:
+  bundled: false
+  connection:
+    host: "postgres-postgresql.postgres.svc.cluster.local"
+    port: "5432"
+  auth:
+    username: "postgres_fid"
+    database: "openproject"
+    password: "REPLACE_WITH_DB_PASSWORD"
+    postgresPassword: "REPLACE_WITH_POSTGRES_PASSWORD"
+service:
+  enabled: false
+ingress:
+  enabled: false

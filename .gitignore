@@ -74,6 +74,20 @@ pids/
 # Secrets directory
 secrets/
 
+# Generated Helm manifests
+**/rendered-manifests.yaml
+**/rendered-*.yaml
+
+# Helm values with secrets (use .example files instead)
+**/values.yml
+!**/values.yml.example
+
+# Kubernetes client configs with credentials
+k3s-config/config.yaml
+
+# Deployment scripts with potential env vars
+deploy-*.sh
+
 # IDE and editor files
 .vscode/
 .idea/

@@ -25,11 +25,12 @@ data:
         timeout = "30s"
       [directory."ldap".bind]
         dn = "uid=bind_reader,ou=people,dc=andromeda,dc=picklemustard,dc=dev"
-        secret = "***REMOVED***"
+        secret = "%{env:LDAP_BIND_PASSWORD}%"
       [directory."ldap".bind.auth]
-        enable = true
-        dn = "uid=?,ou=people,dc=andromeda,dc=picklemustard,dc=dev"
-        search = false
+        method = "lookup"
+      #enable = true
+      #dn = "uid=?,ou=people,dc=andromeda,dc=picklemustard,dc=dev"
+      #search = false
       [directory."ldap".filter]
         name = "(&(|(objectClass=person)(objectClass=posixGroup))(uid=?))"
         email = "(&(|(objectClass=person)(objectClass=posixGroup))(|(mail=?)(mailAlias=?)))"
@@ -43,12 +44,34 @@ data:
         email-alias = "mailAlias"
         quota = "diskQuota"
 
-        #[metrics]
-        #  [metrics.prometheus]
-        #    enable = true
-        #    [metrics.prometheus.auth]
-        #      secret = "%{env:METRICS_SECRET}%"
-        #      username = "%{env:METRICS_USERNAME}%"
+        [metrics]
+          [metrics.prometheus]
+            enable = true
+
+    [cache]
+      messages = "20mb"
+      accounts = "10mb"
+      contacts = "5mb"
+      events = "5mb"
+      files = "5mb"
+      dkimSignatures = "5mb"
+      mailingLists = "1mb"
+      domains = "2mb"
+      domainNames = "5mb"
+      emailAddresses = "5mb"
+      emailAddressesNegative = "1mb"
+      domainNamesNegative = "512kb"
+      tenants = "2mb"
+      accessTokens = "5mb"
+      httpAuth = "512kb"
+      dnsTxt = "2mb"
+      dnsMx = "2mb"
+      dnsIpv4 = "2mb"
+      dnsIpv6 = "2mb"
+      dnsRbl = "2mb"
+      dnsPtr = "512kb"
+      dnsTlsa = "512kb"
+      dnsMtaSts = "512kb"
 
     [certificate."default"]
     cert = "%{file:/opt/stalwart/etc/private/tls.cert}%"
@@ -56,6 +79,7 @@ data:
     default = true
     [server]
       hostname = "picklemustard.dev"
+      threadPoolSize = 4
       blocked-ip = ""
       [server.allowed-ip]
         "10.0.0.0/8" = ""

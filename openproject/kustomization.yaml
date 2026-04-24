@@ -1,0 +1,176 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: collab
+
+# Use rendered manifests from Helm template
+resources:
+  - ./rendered-manifests.yaml
+
+# Patch web deployment init-container
+patches:
+  - target:
+      kind: Secret
+      name: openproject-core
+    patch: |-
+      - op: replace
+        path: /stringData
+        value:
+          DATABASE_HOST: postgres-postgresql.postgres.svc.cluster.local
+          DATABASE_PORT: "5432"
+          DATABASE_URL: "postgresql://postgres-postgresql.postgres.svc.cluster.local:5432/openproject"
+          OPENPROJECT_DB_USERNAME: "postgres_fid"
+          OPENPROJECT_DB_PASSWORD: "***REMOVED***"
+          OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__URL: wss://andromeda.picklemustard.dev/hocuspocus
+          OPENPROJECT_HOST__NAME: andromeda.picklemustard.dev
+          OPENPROJECT_HSTS: "true"
+          OPENPROJECT_HTTPS: "true"
+          OPENPROJECT_RAILS__CACHE__STORE: memcache
+          OPENPROJECT_RAILS__RELATIVE__URL__ROOT: /collab/plan
+          OPENPROJECT_SEED_ADMIN_USER_MAIL: admin@example.net
+          OPENPROJECT_SEED_ADMIN_USER_NAME: OpenProject Admin
+          OPENPROJECT_SEED_ADMIN_USER_PASSWORD: admin
+          OPENPROJECT_SEED_ADMIN_USER_PASSWORD_RESET: "true"
+          POSTGRES_STATEMENT_TIMEOUT: 120s
+  - target:
+      kind: Deployment
+      name: openproject-web
+    patch: |-
+      # Replace init-container volumeMounts to use hostPath volumes
+      - op: replace
+        path: /spec/template/spec/initContainers/0/volumeMounts
+        value:
+          - name: tmp
+            mountPath: /tmp
+          - name: app-tmp
+            mountPath: /app/tmp
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts
+        value:
+          - name: tmp
+            mountPath: /tmp
+          - name: app-tmp
+            mountPath: /app/tmp
+      # Add hostPath volumes to pod spec
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: tmp
+          hostPath:
+            path: /tmp/openproject-tmp
+            type: DirectoryOrCreate
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: app-tmp
+          hostPath:
+            path: /tmp/openproject-app-tmp
+            type: DirectoryOrCreate
+
+# Patch worker deployment init-container
+  - target:
+      kind: Deployment
+      name: openproject-worker-default
+    patch: |-
+      # Replace init-container volumeMounts to use hostPath volumes
+      - op: replace
+        path: /spec/template/spec/initContainers/0/volumeMounts
+        value:
+          - name: tmp
+            mountPath: /tmp
+          - name: app-tmp
+            mountPath: /app/tmp
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts
+        value:
+          - name: tmp
+            mountPath: /tmp
+          - name: app-tmp
+            mountPath: /app/tmp
+      # Add hostPath volumes to pod spec
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: tmp
+          hostPath:
+            path: /tmp/openproject-tmp
+            type: DirectoryOrCreate
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: app-tmp
+          hostPath:
+            path: /tmp/openproject-app-tmp
+            type: DirectoryOrCreate
+
+# Patch cron deployment init-container (if enabled)
+  - target:
+      kind: Deployment
+      name: openproject-cron
+    patch: |-
+      # Replace init-container volumeMounts to use hostPath volumes
+      - op: replace
+        path: /spec/template/spec/initContainers/0/volumeMounts
+        value:
+          - name: tmp
+            mountPath: /tmp
+          - name: app-tmp
+            mountPath: /app/tmp
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts
+        value:
+          - name: tmp
+            mountPath: /tmp
+          - name: app-tmp
+            mountPath: /app/tmp
+      # Add hostPath volumes to pod spec
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: tmp
+          hostPath:
+            path: /tmp/openproject-tmp
+            type: DirectoryOrCreate
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: app-tmp
+          hostPath:
+            path: /tmp/openproject-app-tmp
+            type: DirectoryOrCreate
+
+# Patch seeder job init-container
+  - target:
+      kind: Job
+      name: openproject-seeder-1
+    patch: |-
+      # Replace init-container volumeMounts to use hostPath volumes
+      - op: replace
+        path: /spec/template/spec/initContainers/0/volumeMounts
+        value:
+          - name: tmp
+            mountPath: /tmp
+          - name: app-tmp
+            mountPath: /app/tmp
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts
+        value:
+          - name: tmp
+            mountPath: /tmp
+          - name: app-tmp
+            mountPath: /app/tmp
+      # Add hostPath volumes to pod spec
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: tmp
+          hostPath:
+            path: /tmp/openproject-tmp
+            type: DirectoryOrCreate
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: app-tmp
+          hostPath:
+            path: /tmp/openproject-app-tmp
+            type: DirectoryOrCreate

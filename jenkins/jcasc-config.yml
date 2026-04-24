@@ -10,7 +10,7 @@ data:
   jcasc-config.yml: |
     jenkins:
       systemMessage: "Jenkins CI/CD for Forgejo"
-      numExecutors: 0
+      numExecutors: 2
       mode: NORMAL
       labelString: ""
       globalNodeProperties:
@@ -40,7 +40,7 @@ data:
             name: "kubernetes"
             serverUrl: "https://kubernetes.default"
             namespace: "jenkins"
-            jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
+            jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080/tools/jenkins/"
             jenkinsTunnel: "jenkins.jenkins.svc.cluster.local:50000"
             skipTlsVerify: true
             maxRequestsPerHostStr: "32"
@@ -53,26 +53,6 @@ data:
               - key: "app.kubernetes.io/instance"
                 value: "jenkins"
             templates:
-              - name: "kubectl-agent"
-                label: "kubectl"
-                serviceAccount: "jenkins-controller"
-                namespace: "jenkins"
-                nodeUsageMode: "NORMAL"
-                idleMinutes: 1
-                activeDeadlineSeconds: 1200
-                slaveConnectTimeoutStr: "60"
-                containers:
-                  - name: "jnlp"
-                    image: "bitnami/kubectl:latest"
-                    alwaysPullImage: false
-                    workingDir: "/home/jenkins/agent"
-                    command: "/bin/cat"
-                    args: ""
-                    ttyEnabled: true
-                    resourceRequestCpu: "250m"
-                    resourceRequestMemory: "256Mi"
-                    resourceLimitCpu: "500m"
-                    resourceLimitMemory: "512Mi"
               - name: "default-agent"
                 label: "default"
                 serviceAccount: "jenkins-controller"

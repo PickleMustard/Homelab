@@ -59,6 +59,8 @@ spec:
           envFrom:
             - secretRef:
                 name: taiga-secrets
+            - configMapRef:
+                name: taiga-back-configpy
           env:
             - name: TAIGA_SITES_SCHEME
               value: "https"

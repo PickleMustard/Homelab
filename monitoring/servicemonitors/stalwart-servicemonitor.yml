@@ -15,4 +15,4 @@ spec:
   endpoints:
     - port: http
       interval: 30s
-      path: /metrics
+      path: /metrics/prometheus

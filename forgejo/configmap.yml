@@ -29,6 +29,7 @@ data:
   FORGEJO__server__LFS_CONTENT_PATH: "/data/git/lfs"
   FORGEJO__ACTIONS__ENABLED: "true"
   FORGEJO__PACKAGES__ENABLED: "true"
+  FORGEJO__metrics__ENABLED: "true"
   FORGEJO__REPOSITORY__ENABLE_PUSH_CREATE_USER: "true"
   FORGEJO__REPOSITORY__ENABLE_PUSH_CREATE_ORG: "true"
   FORGEJO__REPOSITORY__DEFAULT_REPO_UNITS: "repo.code,repo.releases,repo.issues,repo.pulls,repo.wiki,repo.projects,repo.packages,repo.actions"

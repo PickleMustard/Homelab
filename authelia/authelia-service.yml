@@ -3,9 +3,12 @@ kind: Service
 metadata:
   name: authelia-service
   namespace: auth
+  labels:
+    app.kubernetes.io/name: authelia
+    app.kubernetes.io/instance: authelia
   annotations:
     prometheus.io/scrape: "true"
-    prometheus.io/port: "9091"
+    prometheus.io/port: "9959"
     prometheus.io/path: "/metrics"
 spec:
   type: ClusterIP
@@ -22,3 +25,7 @@ spec:
     port: 9091
     protocol: TCP
     targetPort: 9091
+  - name: metrics
+    port: 9959
+    targetPort: 9959
+    protocol: TCP

@@ -7,7 +7,7 @@ data:
 
     default_2fa_method: 'totp'
 
-    certificates_directory: '/config/certificates/'
+      #certificates_directory: '/config/certificates/'
 
     server:
       address: 'tcp://0.0.0.0:9091/authelia'
@@ -26,6 +26,11 @@ data:
         authz:
           forward-auth:
             implementation: 'ForwardAuth'
+            authn_strategies:
+              - name: 'HeaderProxyAuthorization'
+                schemes:
+                  - 'Basic'
+              - name: 'CookieSession'
           ext-authz:
             implementation: 'ExtAuthz'
           auth-request:
@@ -33,12 +38,13 @@ data:
           legacy:
             implementation: 'Legacy'
     log:
-      level: 'debug'
+      level: 'trace'
       format: 'text'
       keep_stdout: true
     telemetry:
       metrics:
-        enabled: false
+        enabled: true
+        address: 'tcp://:9959/metrics'
     access_control:
       default_policy: 'deny'
       rules:
@@ -47,6 +53,12 @@ data:
         - domain: 'andromeda.picklemustard.dev'
           policy: 'two_factor'
         - domain: 'media.picklemustard.dev'
+          resources:
+            - '^/stream([/?].*)?$'
+          policy: 'bypass'
+        - domain: 'media.picklemustard.dev'
+          policy: 'two_factor'
+        - domain: '*.picklemustard.dev'
           policy: 'two_factor'
     identity_validation:
       elevated_session:
@@ -141,6 +153,7 @@ data:
       cookies:
         - domain: 'picklemustard.dev'
           authelia_url: 'https://auth.picklemustard.dev/authelia'
+          default_redirection_url: 'https://andromeda.picklemustard.dev'
     regulation:
       modes:
       - 'user'

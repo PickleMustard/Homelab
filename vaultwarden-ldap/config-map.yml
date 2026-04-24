@@ -9,12 +9,12 @@ metadata:
   namespace: vaultwarden
 data:
   config.toml: |
-    vaultwarden_url = "http://vaultwarden-headless.vaultwarden.svc.cluster.local"
-    vaultwarden_admin_token= "purple14735"
+    vaultwarden_url = "https://auth.picklemustard.dev/pass/"
+    vaultwarden_admin_token= "%{env:VAULTWARDEN_ADMIN_TOKEN}%"
     ldap_host = "192.168.200.242"
     ldap_port = 3890
     ldap_bind_dn = "uid=bind_reader,ou=people,dc=andromeda,dc=picklemustard,dc=dev"
-    ldap_bind_password = "***REMOVED***"
+    ldap_bind_password = "%{env:LDAP_BIND_PASSWORD}%"
     ldap_search_base_dn = "dc=andromeda,dc=picklemustard,dc=dev"
     ldap_search_filter = "(&(objectclass=person)(memberOf=cn=password-users,ou=groups,dc=andromeda,dc=picklemustard,dc=dev))"
     ldap_sync_interval_seconds = 300

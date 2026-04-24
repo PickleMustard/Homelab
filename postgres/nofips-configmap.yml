@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openssl-nofips
+  namespace: postgres
+data:
+  openssl.cnf: |
+    #
+    # Minimal OpenSSL 3.x configuration — no FIPS provider.
+    # Loads only the default provider, which includes MD5 and other
+    # legacy-but-useful algorithms needed by applications like
+    # GoodJob that use md5() for advisory lock key derivation.
+    #
+
+    config_diagnostics = 1
+    openssl_conf = openssl_init
+
+    # Default section for library-wide settings
+    [openssl_init]
+    providers = provider_sect
+    ssl_conf  = ssl_sect
+
+    # Provider configuration — only load the default provider.
+    # Explicitly NOT loading the fips provider.
+    [provider_sect]
+    default = default_sect
+
+    [default_sect]
+    activate = 1
+
+    # If you need legacy algorithms (e.g. older ciphers for client
+    # compatibility), uncomment the legacy provider below. Not required
+    # for MD5 — MD5 lives in the default provider.
+    #
+    # [provider_sect]
+    # default = default_sect
+    # legacy  = legacy_sect
+    #
+    # [legacy_sect]
+    # activate = 1
+
+    # TLS defaults — reasonable modern baseline
+    [ssl_sect]
+    system_default = system_default_sect
+
+    [system_default_sect]
+    MinProtocol = TLSv1.2
+    CipherString = DEFAULT:@SECLEVEL=2

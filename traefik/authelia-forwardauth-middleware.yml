@@ -8,7 +8,9 @@ metadata:
     app.kubernetes.io/name: authelia
 spec:
   forwardAuth:
-    address: 'http://authelia-service.auth.svc.cluster.local:9091/api/authz/forward-auth'
+    address: 'http://authelia-service.auth.svc.cluster.local:9091/authelia/api/authz/forward-auth'
+    trustForwardHeader: true
+    preserveRequestMethod: true
     authResponseHeaders:
       - 'Remote-User'
       - 'Remote-Groups'

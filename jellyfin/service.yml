@@ -3,9 +3,11 @@ kind: Service
 metadata:
   name: jellyfin-service
   namespace: media
+  labels:
+    app: jellyfin
   annotations:
     prometheus.io/scrape: "true"
-    prometheus.io/port: "8096"
+    prometheus.io/port: "9594"
     prometheus.io/path: "/metrics"
 spec:
   selector:
@@ -24,3 +26,6 @@ spec:
       protocol: UDP
       port: 7359
       targetPort: 7359
+    - name: metrics
+      port: 9594
+      targetPort: 9594

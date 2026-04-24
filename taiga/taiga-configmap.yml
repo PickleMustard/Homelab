@@ -8,7 +8,7 @@ data:
     {
       "api": "https://andromeda.picklemustard.dev/collab/taiga/api/v1/",
       "eventsUrl": null,
-      "baseHref": "/collab/taiga/",
+      "baseHref": "/collab/taiga",
       "loginFormType": "ldap",
       "eventsMaxMissedHeartbeats": 5,
       "eventsHeartbeatIntervalTime": 60000,
@@ -57,7 +57,7 @@ data:
       client_max_body_size 100M;
       charset utf-8;
 
-      location /collab/taiga/ {
+      location /collab/taiga {
           alias /usr/share/nginx/html/;
           index index.html;
           try_files $uri $uri/ index.html =404;

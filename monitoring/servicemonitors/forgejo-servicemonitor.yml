@@ -1,18 +1,18 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: jellyfin
+  name: forgejo
   namespace: monitoring
   labels:
     release: prometheus
 spec:
   selector:
     matchLabels:
-      app: jellyfin
+      app.kubernetes.io/name: forgejo
   namespaceSelector:
     matchNames:
-      - media
+      - git
   endpoints:
-    - port: metrics
+    - port: "3000"
       interval: 30s
       path: /metrics

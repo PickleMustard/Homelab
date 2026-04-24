@@ -1,6 +1,9 @@
 prometheus:
+  replicas: 1
   prometheusSpec:
     retention: 15d
+    nodeSelector:
+      kubernetes.io/hostname: andromeda-alpheratz
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -9,19 +12,21 @@ prometheus:
           resources:
             requests:
               storage: 20Gi
-    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: true
     serviceMonitorNamespaceSelector:
       matchLabels:
         monitoring: enabled
     podMonitorNamespaceSelector:
       matchLabels:
         monitoring: enabled
-    ruleSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: true
     ruleNamespaceSelector:
       matchLabels:
         monitoring: enabled
 
 grafana:
+  nodeSelector:
+    kubernetes.io/hostname: almach
   persistence:
     enabled: false
   ingress:
@@ -103,16 +108,6 @@ defaultRules:
 prometheusOperator:
   admissionWebhooks:
     enabled: true
-  tls:
-    enabled: true
-
-resources:
-  limits:
-    cpu: 500m
-    memory: 512Mi
-  requests:
-    cpu: 250m
-    memory: 256Mi
 
 global:
   rbac:

@@ -1,25 +1,16 @@
-apiVersion: v1
-kind: PersistentVolume
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
 metadata:
-  annotations:
-    pv.kubernetes.io/provisioned-by: smb.csi.k8s.io
   name: documents-data
   namespace: collab 
-spec:
-  capacity:
-    storage: 50Gi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: smb
-  mountOptions:
-    - dir_mode=0777
-    - file_mode=0777
-  csi:
-    driver: smb.csi.k8s.io
-    volumeHandle: smb-server.default.svc.cluster.local/documents
-    volumeAttributes:
-      source: //192.168.200.205/documents
-    nodeStageSecretRef:
-      name: documents-data-creds
-      namespace: collab 
+provisioner: smb.csi.k8s.io
+parameters:
+  source: //192.168.200.205/documents
+  csi.storage.k8s.io/provisioner-secret-name: documents-data-creds
+  csi.storage.k8s.io/provisioner-secret-namespace: collab 
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777

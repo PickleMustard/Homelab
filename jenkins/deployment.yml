@@ -107,13 +107,6 @@ spec:
             - name: jcasc-config
               mountPath: /var/jenkins_home/casc
               readOnly: true
-          resources:
-            limits:
-              cpu: "2"
-              memory: "4Gi"
-            requests:
-              cpu: "500m"
-              memory: "1Gi"
       volumes:
         - name: jenkins-home
           persistentVolumeClaim:

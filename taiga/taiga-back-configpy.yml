@@ -9,7 +9,7 @@ data:
 
     from .common import *
 
-    DEBUG = True
+    DEBUG = False
 
     ADMINS = (
       ("endmin", "endmin@picklemustard.dev"),
@@ -30,7 +30,7 @@ data:
 
     TAIGA_SITES_SCHEME = "https"
     TAIGA_SITES_DOMAIN = "andromeda.picklemustard.dev"
-    FORCE_SCRIPT_NAME = "/collab/taiga/"
+    FORCE_SCRIPT_NAME = "/collab/taiga"
     TAIGA_URL = f"{ TAIGA_SITES_SCHEME }://{ TAIGA_SITES_DOMAIN }{ FORCE_SCRIPT_NAME }"
     SITES = {
         "api": { "name": "api", "scheme": {TAIGA_SITES_SCHEME}, "domain": {TAIGA_SITES_DOMAIN} },
@@ -47,11 +47,11 @@ data:
     
     DEFAULT_FROM_EMAIL = 'postmaster@picklemustard.dev'
     EMAIL_USE_TLS = False
-    EMAIL_USE_SSL = True 
-    EMAIL_HOST = 'mail.picklemustard.dev'
+    EMAIL_USE_SSL = True
+    EMAIL_HOST = 'picklemustard.dev'
     EMAIL_PORT = 465
     EMAIL_HOST_USER = 'postmaster'
-    EMAIL_HOST_PASSWORD = '***REMOVED***'
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
     ENABLE_TELEMETRY = True
 
@@ -59,13 +59,14 @@ data:
 
     LDAP_SERVER = "ldap://lldap.picklemustard.dev"
     LDAP_PORT = 389
-    LDAP_BIND_DN = "uid=<username>,ou=people,dc=andromeda,dc=picklemustard,dc=dev"
-    LDAP_BIND_WITH_USER_PROVIDED_CREDENTIALS = True
+    LDAP_BIND_DN = "uid=bind_reader,ou=people,dc=andromeda,dc=picklemustard,dc=dev"
+    LDAP_BIND_PASSWORD = os.environ.get('LDAP_BIND_PASSWORD', '')
     LDAP_SEARCH_BASE = "ou=people,dc=andromeda,dc=picklemustard,dc=dev"
     LDAP_USERNAME_ATTRIBUTE = "uid"
     LDAP_EMAIL_ATTRIBUTE = "mail"
     LDAP_FULL_NAME_ATTRIBUTE = "displayname"
     LDAP_SAVE_LOGIN_PASSWORD = False
     LDAP_MAP_USERNAME_TO_UID = None
+    LDAP_FALLBACK = "normal"
 
 

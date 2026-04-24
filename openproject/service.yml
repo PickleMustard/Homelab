@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: openproject
     app.kubernetes.io/name: openproject
+    openproject/process: web
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8080"
@@ -20,6 +21,7 @@ spec:
   selector:
     app.kubernetes.io/instance: openproject
     app.kubernetes.io/name: openproject
+    openproject/process: web
   ports:
     - name: http
       port: 8080

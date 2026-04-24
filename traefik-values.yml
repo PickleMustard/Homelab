@@ -1,6 +1,38 @@
 additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
-  - "--log.level=TRACE"
+  - "--log.level=INFO"
+
+# Access Logs Configuration - Request Tracing & Header Capture
+logs:
+  general:
+    format: json
+    level: TRACE
+
+  access:
+    enabled: true
+    format: json
+    bufferingSize: 100
+    addInternals: true
+    fields:
+      general:
+        defaultMode: keep
+        names:
+          StartUTC: drop
+          ClientUsername: drop
+      headers:
+        defaultMode: keep
+        names:
+          User-Agent: keep
+          X-Forwarded-For: keep
+          X-Forwarded-Proto: keep
+          X-Forwarded-Host: keep
+          X-Real-IP: keep
+          X-Request-ID: keep
+          Content-Type: keep
+          Accept: keep
+          Authorization: keep
+          X-Forwarded-Method: keep
+
 
 deployment:
   enabled: true
@@ -29,6 +61,12 @@ ports:
     expose:
       default: true
     protocol: TCP
+    forwardedHeaders:
+      trustedIPs:
+        - 192.168.200.200
+      insecure: true
+    proxyProtocol:
+      insecure: true
 
   postgres:
     port: 5432
@@ -112,6 +150,13 @@ ports:
   ssh-git:
     port: 22
     exposedPort: 2222
+    expose:
+      default: true
+    protocol: TCP
+    forwardedHeaders:
+      trustedIPs:
+        - 192.168.200.200
+      insecure: true
 
 gateway:
   enabled: true

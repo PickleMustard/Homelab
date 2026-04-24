@@ -34,6 +34,19 @@ spec:
           resources:
             limits:
               nvidia.com/gpu: 1 # Requesting a single NVIDIA GPU
+        - name: jellyfin-exporter
+          image: rebelcore/jellyfin-exporter:latest
+          ports:
+            - containerPort: 9594
+              name: metrics
+          env:
+            - name: JELLYFIN_URL
+              value: "http://localhost:8096"
+            - name: JELLYFIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: jellyfin-secrets
+                  key: api-key
       volumes:
         - name: media-storage
           persistentVolumeClaim:

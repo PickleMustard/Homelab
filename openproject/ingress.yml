@@ -5,7 +5,6 @@ metadata:
   namespace: collab
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: "web"
-    traefik.ingress.kubernetes.io/router.middlewares: 'kube-system-strip-path-prefix@kubernetescrd'
   labels:
     app.kubernetes.io/instance: openproject
     app.kubernetes.io/name: openproject-ingress

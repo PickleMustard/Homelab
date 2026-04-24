@@ -1,14 +1,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: openproject-data
+  name: openproject
   namespace: collab
   labels:
-    app.kubernetes.io/instance: openproject-data
-    app.kubernetes.io/name: openproject-data
+    app.kubernetes.io/instance: openproject
+    app.kubernetes.io/name: openproject
 spec:
   storageClassName: smb
-  volumeName: documents-data
   accessModes:
     - ReadWriteMany
   resources:

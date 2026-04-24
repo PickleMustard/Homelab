@@ -43,6 +43,9 @@ spec:
         - containerPort: 9091
           name: http
           protocol: TCP
+          hostPort: 19091
+        - containerPort: 9959
+          name: metrics
         volumeMounts:
         - name: config
           mountPath: /config/configuration.yml
