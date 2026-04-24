@@ -23,7 +23,7 @@ spec:
                   name: taiga-config
                   key: SECRET_KEY
             - name: DATABASES
-              value: '{"default":{"ENGINE":"django.db.backends.postgresql","HOST":"postgres-postgresql.postgres.svc.cluster.local","NAME":"taiga","USER":"postgres_fid","PASSWORD":"***REMOVED***","PORT":5432,"CONN_MAX_AGE":600}}'
+              value: '{"default":{"ENGINE":"django.db.backends.postgresql","HOST":"postgres-postgresql.postgres.svc.cluster.local","NAME":"taiga","USER":"postgres_fid","PASSWORD":"REPLACE_WITH_POSTGRES_PASSWORD","PORT":5432,"CONN_MAX_AGE":600}}'
             - name: CELERY_ENABLED
               value: "false"
             - name: TAIGA_SITES_SCHEME

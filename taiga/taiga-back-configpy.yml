@@ -20,7 +20,7 @@ data:
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'taiga',
         'USER': 'postgres_fid',
-        'PASSWORD': '***REMOVED***',
+        'PASSWORD': os.environ.get('TAIGA_DB_PASSWORD', ''),
         'HOST': 'postgres-postgresql.postgres.svc.cluster.local',
         'PORT': '5432',
       }

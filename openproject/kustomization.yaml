@@ -20,7 +20,7 @@ patches:
           DATABASE_PORT: "5432"
           DATABASE_URL: "postgresql://postgres-postgresql.postgres.svc.cluster.local:5432/openproject"
           OPENPROJECT_DB_USERNAME: "postgres_fid"
-          OPENPROJECT_DB_PASSWORD: "***REMOVED***"
+          OPENPROJECT_DB_PASSWORD: "REPLACE_WITH_POSTGRES_PASSWORD"
           OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__URL: wss://andromeda.picklemustard.dev/hocuspocus
           OPENPROJECT_HOST__NAME: andromeda.picklemustard.dev
           OPENPROJECT_HSTS: "true"

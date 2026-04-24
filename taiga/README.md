@@ -84,7 +84,7 @@ URL: https://andromeda.picklemustard.dev/collab/taiga
 
 Admin Login:
 - Username: endmin
-- Password: ***REMOVED***
+- Password: REPLACE_WITH_LDAP_PASSWORD
 
 LDAP users can log in using their LLDAP credentials.
 
@@ -119,7 +119,7 @@ kubectl run -it --rm debug --image=curlimages/curl --restart=Never -n collab -- 
 ### Database Connection Issues
 Verify PostgreSQL is accessible:
 ```bash
-kubectl run -it --rm debug --image=postgres:15 --restart=Never -n collab -- psql "postgresql://postgres_fid:***REMOVED***@postgres-postgresql.postgres.svc.cluster.local:5432/postgres" -c "SELECT 1"
+kubectl run -it --rm debug --image=postgres:15 --restart=Never -n collab -- psql "postgresql://postgres_fid:REPLACE_WITH_POSTGRES_PASSWORD@postgres-postgresql.postgres.svc.cluster.local:5432/postgres" -c "SELECT 1"
 ```
 
 ### Storage Issues

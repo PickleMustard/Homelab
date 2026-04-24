@@ -45,7 +45,7 @@ spec:
             - name: LOG_LEVEL
               value: "trace"
             - name: DATABASE_URL
-              value: "postgresql://postgres_fid:***REMOVED***@postgres-postgresql.postgres.svc.cluster.local:5432/vaultwarden"
+              value: "postgresql://postgres_fid:REPLACE_WITH_POSTGRES_PASSWORD@postgres-postgresql.postgres.svc.cluster.local:5432/vaultwarden"
             - name: DOMAIN
               value: "https://auth.picklemustard.dev/pass/"
             - name: PUSH_ENABLED
